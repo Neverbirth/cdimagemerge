@@ -264,10 +264,11 @@ Public Class ImageInfo
 
         Return True
     End Function
-    'TODO: Agregar a coleccion
-    'TODO: Meter comprobaciones IsDirectory?
-    'TODO: Meter propiedad parent?
-    'TODO: Comprobar cuando .
+
+    'TODO: Add to collection
+    'TODO: Add IsDirectory check?
+    'TODO: Add Parent property?
+    'TODO: Check .
     Private Sub ParseDirectoryRecord(ByVal lba As Integer)
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)

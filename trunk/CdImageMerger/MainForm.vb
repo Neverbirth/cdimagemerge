@@ -1,4 +1,6 @@
-﻿Public Class MainForm
+﻿'TODO: Let user choose image mode
+
+Public Class MainForm
 
     Private Const CDMAGE_OFFSET As Integer = 149
 
@@ -38,7 +40,7 @@
                 sectors = GetImageSectors(_origImage, 2352)
 
                 If sectors = -1 Then
-                    MessageBox.Show("El tamaño de bloque no coincide con el tamaño total de la imagen de origen", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("Source image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
                     Return
                 End If
 
@@ -50,7 +52,7 @@
                 sectors = GetImageSectors(_destImage, 2352)
 
                 If sectors = -1 Then
-                    MessageBox.Show("El tamaño de bloque no coincide con el tamaño total de la imagen de destino", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("Destination image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
                     Return
                 End If
 
