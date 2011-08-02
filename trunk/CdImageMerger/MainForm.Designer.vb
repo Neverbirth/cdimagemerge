@@ -22,13 +22,7 @@ Partial Class MainForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Me.GroupBox2 = New System.Windows.Forms.GroupBox
-        Me.TreeView2 = New System.Windows.Forms.TreeView
-        Me.TreeView1 = New System.Windows.Forms.TreeView
-        Me.ListView2 = New System.Windows.Forms.ListView
-        Me.Label2 = New System.Windows.Forms.Label
-        Me.ListView1 = New System.Windows.Forms.ListView
-        Me.Label1 = New System.Windows.Forms.Label
+        Me.ImageInfoGroupBox = New System.Windows.Forms.GroupBox
         Me.OpenBtn = New System.Windows.Forms.Button
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel
         Me.ToolStripProgressBar1 = New System.Windows.Forms.ToolStripProgressBar
@@ -47,94 +41,36 @@ Partial Class MainForm
         Me.OriginStartNumeric = New System.Windows.Forms.NumericUpDown
         Me.DestinationStartNumeric = New System.Windows.Forms.NumericUpDown
         Me.OriginEndNumeric = New System.Windows.Forms.NumericUpDown
-        Me.GroupBox2.SuspendLayout()
+        Me.ImageInfoSplitContainer = New System.Windows.Forms.SplitContainer
+        Me.TreeView1 = New System.Windows.Forms.TreeView
+        Me.ListView1 = New System.Windows.Forms.ListView
+        Me.Label1 = New System.Windows.Forms.Label
+        Me.TreeView2 = New System.Windows.Forms.TreeView
+        Me.ListView2 = New System.Windows.Forms.ListView
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.ImageInfoGroupBox.SuspendLayout()
         Me.StatusStrip.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.OriginStartNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DestinationStartNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.OriginEndNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.ImageInfoSplitContainer.Panel1.SuspendLayout()
+        Me.ImageInfoSplitContainer.Panel2.SuspendLayout()
+        Me.ImageInfoSplitContainer.SuspendLayout()
         Me.SuspendLayout()
         '
-        'GroupBox2
+        'ImageInfoGroupBox
         '
-        Me.GroupBox2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox2.Controls.Add(Me.TreeView2)
-        Me.GroupBox2.Controls.Add(Me.TreeView1)
-        Me.GroupBox2.Controls.Add(Me.ListView2)
-        Me.GroupBox2.Controls.Add(Me.Label2)
-        Me.GroupBox2.Controls.Add(Me.ListView1)
-        Me.GroupBox2.Controls.Add(Me.Label1)
-        Me.GroupBox2.Location = New System.Drawing.Point(12, 12)
-        Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(663, 300)
-        Me.GroupBox2.TabIndex = 5
-        Me.GroupBox2.TabStop = False
-        Me.GroupBox2.Text = "Information"
-        '
-        'TreeView2
-        '
-        Me.TreeView2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.TreeView2.Location = New System.Drawing.Point(334, 32)
-        Me.TreeView2.Name = "TreeView2"
-        Me.TreeView2.Size = New System.Drawing.Size(106, 262)
-        Me.TreeView2.TabIndex = 12
-        '
-        'TreeView1
-        '
-        Me.TreeView1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.TreeView1.Location = New System.Drawing.Point(6, 32)
-        Me.TreeView1.Name = "TreeView1"
-        Me.TreeView1.Size = New System.Drawing.Size(106, 262)
-        Me.TreeView1.TabIndex = 11
-        '
-        'ListView2
-        '
-        Me.ListView2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.ImageInfoGroupBox.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListView2.Location = New System.Drawing.Point(444, 32)
-        Me.ListView2.Name = "ListView2"
-        Me.ListView2.Size = New System.Drawing.Size(213, 262)
-        Me.ListView2.TabIndex = 10
-        Me.ListView2.UseCompatibleStateImageBehavior = False
-        '
-        'Label2
-        '
-        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(447, 16)
-        Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(92, 13)
-        Me.Label2.TabIndex = 1
-        Me.Label2.Text = "Destination Image"
-        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'ListView1
-        '
-        Me.ListView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListView1.Location = New System.Drawing.Point(116, 32)
-        Me.ListView1.Name = "ListView1"
-        Me.ListView1.Size = New System.Drawing.Size(212, 262)
-        Me.ListView1.TabIndex = 9
-        Me.ListView1.UseCompatibleStateImageBehavior = False
-        '
-        'Label1
-        '
-        Me.Label1.Anchor = System.Windows.Forms.AnchorStyles.Top
-        Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(123, 16)
-        Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(73, 13)
-        Me.Label1.TabIndex = 1
-        Me.Label1.Text = "Source Image"
-        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.ImageInfoGroupBox.Controls.Add(Me.ImageInfoSplitContainer)
+        Me.ImageInfoGroupBox.Location = New System.Drawing.Point(12, 12)
+        Me.ImageInfoGroupBox.Name = "ImageInfoGroupBox"
+        Me.ImageInfoGroupBox.Size = New System.Drawing.Size(663, 300)
+        Me.ImageInfoGroupBox.TabIndex = 5
+        Me.ImageInfoGroupBox.TabStop = False
+        Me.ImageInfoGroupBox.Text = "Information"
         '
         'OpenBtn
         '
@@ -314,6 +250,92 @@ Partial Class MainForm
         Me.OriginEndNumeric.Size = New System.Drawing.Size(108, 20)
         Me.OriginEndNumeric.TabIndex = 3
         '
+        'ImageInfoSplitContainer
+        '
+        Me.ImageInfoSplitContainer.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ImageInfoSplitContainer.Location = New System.Drawing.Point(3, 16)
+        Me.ImageInfoSplitContainer.Name = "ImageInfoSplitContainer"
+        '
+        'ImageInfoSplitContainer.Panel1
+        '
+        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.TreeView1)
+        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.ListView1)
+        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.Label1)
+        '
+        'ImageInfoSplitContainer.Panel2
+        '
+        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.TreeView2)
+        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.ListView2)
+        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.Label2)
+        Me.ImageInfoSplitContainer.Size = New System.Drawing.Size(657, 281)
+        Me.ImageInfoSplitContainer.SplitterDistance = 324
+        Me.ImageInfoSplitContainer.SplitterWidth = 2
+        Me.ImageInfoSplitContainer.TabIndex = 13
+        '
+        'TreeView1
+        '
+        Me.TreeView1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.TreeView1.Location = New System.Drawing.Point(3, 16)
+        Me.TreeView1.Name = "TreeView1"
+        Me.TreeView1.Size = New System.Drawing.Size(106, 262)
+        Me.TreeView1.TabIndex = 14
+        '
+        'ListView1
+        '
+        Me.ListView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ListView1.Location = New System.Drawing.Point(113, 16)
+        Me.ListView1.Name = "ListView1"
+        Me.ListView1.Size = New System.Drawing.Size(208, 262)
+        Me.ListView1.TabIndex = 13
+        Me.ListView1.UseCompatibleStateImageBehavior = False
+        '
+        'Label1
+        '
+        Me.Label1.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label1.Location = New System.Drawing.Point(125, 0)
+        Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(73, 13)
+        Me.Label1.TabIndex = 12
+        Me.Label1.Text = "Source Image"
+        Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
+        'TreeView2
+        '
+        Me.TreeView2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.TreeView2.Location = New System.Drawing.Point(3, 16)
+        Me.TreeView2.Name = "TreeView2"
+        Me.TreeView2.Size = New System.Drawing.Size(106, 262)
+        Me.TreeView2.TabIndex = 15
+        '
+        'ListView2
+        '
+        Me.ListView2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ListView2.Location = New System.Drawing.Point(113, 16)
+        Me.ListView2.Name = "ListView2"
+        Me.ListView2.Size = New System.Drawing.Size(206, 262)
+        Me.ListView2.TabIndex = 14
+        Me.ListView2.UseCompatibleStateImageBehavior = False
+        '
+        'Label2
+        '
+        Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Top
+        Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label2.Location = New System.Drawing.Point(112, 0)
+        Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(92, 13)
+        Me.Label2.TabIndex = 13
+        Me.Label2.Text = "Destination Image"
+        Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -321,12 +343,11 @@ Partial Class MainForm
         Me.ClientSize = New System.Drawing.Size(687, 469)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.StatusStrip)
-        Me.Controls.Add(Me.GroupBox2)
+        Me.Controls.Add(Me.ImageInfoGroupBox)
         Me.MinimumSize = New System.Drawing.Size(695, 503)
         Me.Name = "MainForm"
         Me.Text = "CDImageMerger"
-        Me.GroupBox2.ResumeLayout(False)
-        Me.GroupBox2.PerformLayout()
+        Me.ImageInfoGroupBox.ResumeLayout(False)
         Me.StatusStrip.ResumeLayout(False)
         Me.StatusStrip.PerformLayout()
         Me.GroupBox1.ResumeLayout(False)
@@ -334,17 +355,20 @@ Partial Class MainForm
         CType(Me.OriginStartNumeric, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.DestinationStartNumeric, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.OriginEndNumeric, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.ImageInfoSplitContainer.Panel1.ResumeLayout(False)
+        Me.ImageInfoSplitContainer.Panel1.PerformLayout()
+        Me.ImageInfoSplitContainer.Panel2.ResumeLayout(False)
+        Me.ImageInfoSplitContainer.Panel2.PerformLayout()
+        Me.ImageInfoSplitContainer.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
+    Friend WithEvents ImageInfoGroupBox As System.Windows.Forms.GroupBox
     Friend WithEvents OpenBtn As System.Windows.Forms.Button
-    Friend WithEvents Label2 As System.Windows.Forms.Label
     Friend WithEvents ToolStripStatusLabel1 As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents ToolStripProgressBar1 As System.Windows.Forms.ToolStripProgressBar
     Friend WithEvents StatusStrip As System.Windows.Forms.StatusStrip
-    Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents GroupBox1 As System.Windows.Forms.GroupBox
     Friend WithEvents StartBtn As System.Windows.Forms.Button
     Friend WithEvents OriginEndNumeric As System.Windows.Forms.NumericUpDown
@@ -358,10 +382,13 @@ Partial Class MainForm
     Friend WithEvents ActionImportImgRadio As System.Windows.Forms.RadioButton
     Friend WithEvents ActionExportRadio As System.Windows.Forms.RadioButton
     Friend WithEvents ActionImportFileRadio As System.Windows.Forms.RadioButton
-    Friend WithEvents ListView1 As System.Windows.Forms.ListView
-    Friend WithEvents ListView2 As System.Windows.Forms.ListView
-    Friend WithEvents TreeView2 As System.Windows.Forms.TreeView
-    Friend WithEvents TreeView1 As System.Windows.Forms.TreeView
     Friend WithEvents ActionFillSector As System.Windows.Forms.RadioButton
+    Friend WithEvents ImageInfoSplitContainer As System.Windows.Forms.SplitContainer
+    Friend WithEvents TreeView1 As System.Windows.Forms.TreeView
+    Friend WithEvents ListView1 As System.Windows.Forms.ListView
+    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents TreeView2 As System.Windows.Forms.TreeView
+    Friend WithEvents ListView2 As System.Windows.Forms.ListView
+    Friend WithEvents Label2 As System.Windows.Forms.Label
 
 End Class
