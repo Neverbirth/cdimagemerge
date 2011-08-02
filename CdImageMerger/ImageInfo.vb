@@ -1,17 +1,9 @@
 ﻿Imports System.IO
+Imports System.Runtime.InteropServices
 
 Public Class ImageInfo
 
-    Private _fileName As String
-    Private _sectorSize As Integer
-    Private _length As Long
-    Private _mode As ImageModes
-    Private _totalSectors As Integer
-    Private _totalTime As String
-
-    Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
-    Private _pathTableRecord As PathTableRecord
-    Private _directories As Dictionary(Of Integer, Directory)
+#Region " Constants "
 
     Private Const HSVOLSTART As Integer = 16    ' where we expect a Primary Volume Descriptor */
     Private Const HSTERMSTART As Integer = 17    ' where we expect the Volume Descriptor Terminator */
@@ -29,12 +21,39 @@ Public Class ImageInfo
     Private Const protectionBit As Integer = &H10
     Private Const multiextentBit As Integer = &H80
 
+#End Region
+
+#Region " Enumerations "
+
+    Public Enum ImageModes As Integer
+        ModeOne2048 = 0
+        ModeOne2448 = 1
+        ModeOne2368 = 2
+        ModeOne2352 = 3
+        ModeTwo2336 = 4
+        ModeTwo2352 = 5
+        ModeTwo2368 = 6
+        ModeTwo2448 = 7
+    End Enum
+
+#End Region
+
+    Private _fileName As String
+    Private _sectorSize As Integer
+    Private _length As Long
+    Private _mode As ImageModes
+    Private _totalSectors As Integer
+    Private _totalTime As String
+
+    Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
+    Private _pathTableRecord As PathTableRecord
+    Private _directories As Dictionary(Of Integer, Directory)
+
     '****************************************************************************/
     '*  Exported Types                                                          */
     '****************************************************************************/
 
     'typedef unsigned char byte;
-
 
 
     '****************************************************************************/
@@ -46,19 +65,19 @@ Public Class ImageInfo
     '
     Private Structure PrimaryVolumeDescriptor
         Public VDType As Byte           ' Must be 1 for PVD
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=5)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=5)> _
         Public VSStdId As String        ' Must be "CD001"
         Public VSStdVersion As Byte     ' Must be 1
         Public Reserved1 As Byte        ' Must be 0's
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=32)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=32)> _
         Public systemIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, sizeconst:=32)> _
+        <MarshalAs(UnmanagedType.ByValTStr, sizeconst:=32)> _
         Public volumeIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, sizeconst:=8)> _
+        <MarshalAs(UnmanagedType.ByValTStr, sizeconst:=8)> _
         Public Reserved2 As String      ' Must be 0's
         Public lsbVolumeSpaceSize As Integer
         Public msbVolumeSpaceSize As Integer
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=32)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=32)> _
         Public Reserved3 As String      ' Must be 0's
         Public lsbVolumeSetSize As Short
         Public msbVolumeSetSize As Short
@@ -73,27 +92,27 @@ Public Class ImageInfo
         Public msbPathTable1 As Integer ' mandatory occurrence
         Public msbPathTable2 As Integer ' optional occurrence
         Public rootDirectoryRecord As DirectoryRecord
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=128)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public volumeSetIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=128)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public publisherIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=128)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public dataPreparerIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=128)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public applicationIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=37)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=37)> _
         Public copyrightFileIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=37)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=37)> _
         Public abstractFileIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=37)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=37)> _
         Public bibliographicFileIdentifier As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=17)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=17)> _
         Public volumeCreation As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=17)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=17)> _
         Public volumeModification As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=17)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=17)> _
         Public volumeExpiration As String
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=17)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=17)> _
         Public volumeEffective As String
         '  char  FileStructureStandardVersion;
         '  char  Reserved4;        ' Must be 0's
@@ -159,7 +178,7 @@ Public Class ImageInfo
         Public lsbVolSetSeqNum As Short
         Public msbVolSetSeqNum As Short  ' which volume in volume set contains this file.
         Public len_fi As Byte       ' length of file identifier which follows
-        <Runtime.InteropServices.MarshalAs(Runtime.InteropServices.UnmanagedType.ByValTStr, SizeConst:=37)> _
+        <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=37)> _
         Public fi As String         ' file identifier: actual is 37-[36+Len_fi], contains extra blank byte if Len_fi odd
         Public apple As AppleExtension ' this actually fits immediately after the fi[]
         ' field, or after its padding byte. */
@@ -176,31 +195,6 @@ Public Class ImageInfo
         End Property
     End Structure
 
-    Public Structure ImageDirectory
-        Private a As String
-        Private Sub New(ByVal a As String)
-
-        End Sub
-    End Structure
-
-    Public Class ImageDirectory2
-        Private a As String
-        Private Sub New(ByVal a As String)
-
-        End Sub
-    End Class
-
-    Public Enum ImageModes As Integer
-        ModeOne2048 = 0
-        ModeOne2448 = 1
-        ModeOne2368 = 2
-        ModeOne2352 = 3
-        ModeTwo2336 = 4
-        ModeTwo2352 = 5
-        ModeTwo2368 = 6
-        ModeTwo2448 = 7
-    End Enum
-    '    Public prueba As New ImageDirectory2("ASD")
     Public Sub New(ByVal fileName As String, ByVal mode As ImageModes)
         Dim fileInfo As FileInfo = New FileInfo(fileName)
         _fileName = fileName
@@ -209,7 +203,7 @@ Public Class ImageInfo
         _sectorSize = 2352
         _directories = New Dictionary(Of Integer, Directory)
 
-        'GetPrimaryVolumeDescriptor()
+        GetPrimaryVolumeDescriptor()
     End Sub
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
