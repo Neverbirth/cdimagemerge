@@ -1,13 +1,14 @@
 ﻿Public Class MainForm
 
+    Private Const CDMAGE_OFFSET As Integer = 149
+
     Private _origImage As String
     Private _destImage As String
 
     Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         OpenImages()
-        Me.OriginStartNumeric.Minimum = 1
-        Me.DestinationStartNumeric.Minimum = 1
-        Me.StartBtn.Enabled = (_origImage <> "" AndAlso _destImage <> "")
+
+        Me.StartBtn.Enabled = (_origImage <> String.Empty AndAlso _destImage <> String.Empty)
     End Sub
 
     Private Sub StatusStrip_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles StatusStrip.Resize
@@ -19,7 +20,8 @@
 
     Private Sub Open_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenBtn.Click
         OpenImages()
-        Me.StartBtn.Enabled = (_origImage <> "" AndAlso _destImage <> "")
+
+        Me.StartBtn.Enabled = (_origImage <> String.Empty AndAlso _destImage <> String.Empty)
     End Sub
 
     Private Sub OpenImages()
@@ -114,12 +116,12 @@
                         Dim origStartPos As Long = OriginStartNumeric.Value - 1
                         Dim origEndPos As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value) - 1
                         Dim destPos As Long = DestinationStartNumeric.Value - 1
-                        Dim differentSectors As New List(Of String)
+                        Dim differentSectors As New List(Of String)()
 
                         If CdMageOffsetChk.Checked Then
-                            origStartPos -= 149
-                            origEndPos -= 149
-                            destPos -= 149
+                            origStartPos -= CDMAGE_OFFSET
+                            origEndPos -= CDMAGE_OFFSET
+                            destPos -= CDMAGE_OFFSET
                         End If
 
                         originalFileStream.Seek(origStartPos * 2352, IO.SeekOrigin.Begin)
@@ -168,9 +170,9 @@
                         Dim destPos As Long = DestinationStartNumeric.Value - 1
 
                         If CdMageOffsetChk.Checked Then
-                            origStartPos -= 149
-                            origEndPos -= 149
-                            destPos -= 149
+                            origStartPos -= CDMAGE_OFFSET
+                            origEndPos -= CDMAGE_OFFSET
+                            destPos -= CDMAGE_OFFSET
                         End If
 
                         originalFileStream.Seek(origStartPos * 2352, IO.SeekOrigin.Begin)
@@ -208,9 +210,9 @@
                 Dim destPos As Long = DestinationStartNumeric.Value - 1
 
                 If CdMageOffsetChk.Checked Then
-                    origStartPos -= 149
-                    origEndPos -= 149
-                    destPos -= 149
+                    origStartPos -= CDMAGE_OFFSET
+                    origEndPos -= CDMAGE_OFFSET
+                    destPos -= CDMAGE_OFFSET
                 End If
 
                 destinationFileStream.Seek(destPos * 2352, IO.SeekOrigin.Begin)
@@ -239,13 +241,18 @@
 
     Private Sub CdMageOffsetChk_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CdMageOffsetChk.CheckedChanged
         If DirectCast(sender, CheckBox).Checked Then
-            Me.OriginEndNumeric.Maximum += 150
-            Me.OriginStartNumeric.Maximum += 150
-            Me.DestinationStartNumeric.Maximum += 150
+            Me.OriginStartNumeric.Minimum = CDMAGE_OFFSET + 1
+            Me.DestinationStartNumeric.Minimum = CDMAGE_OFFSET + 1
+            Me.OriginEndNumeric.Maximum += CDMAGE_OFFSET
+            Me.OriginStartNumeric.Maximum += CDMAGE_OFFSET
+            Me.DestinationStartNumeric.Maximum += CDMAGE_OFFSET
         Else
-            Me.OriginEndNumeric.Maximum -= 150
-            Me.OriginStartNumeric.Maximum -= 150
-            Me.DestinationStartNumeric.Maximum -= 150
+            Me.OriginStartNumeric.Minimum = 1
+            Me.DestinationStartNumeric.Minimum = 1
+            Me.OriginEndNumeric.Maximum -= CDMAGE_OFFSET
+            Me.OriginStartNumeric.Maximum -= CDMAGE_OFFSET
+            Me.DestinationStartNumeric.Maximum -= CDMAGE_OFFSET
         End If
     End Sub
+
 End Class
