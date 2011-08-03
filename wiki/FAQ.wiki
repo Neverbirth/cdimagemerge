@@ -1,0 +1,24 @@
+#summary This Wiki entry aims to provide a list of answers to common questions regarding CDImageMerge.
+
+= Summary =
+
+ * [FAQ#General_Questions General Questions]:
+ * [FAQ#CDImageMerge_Questions CDImageMerge Questions]:
+  # [FAQ#Which_image_formats_does_CDImageMerge_support? Which image formats does CDImageMerge support?]
+  # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
+  # [FAQ#Does_CDImageMerge_support_DVD_images? Does CDImageMerge support DVD images?]
+
+
+= General Questions =
+
+
+= CDImageMerge Questions =
+
+ * == Which image formats does CDImageMerge support?==
+ CDImageMerge only supports images in plain ISO format. As of August, 2011 there are only plans for adding support to parse .CUE and maybe .CCD files.
+
+ * ==Which CD-ROM formats does CDImageMerge support?==
+ The application reads all images as Mode 2/2352. However, adding support for other formats is trivial and planned.
+
+ * ==Does CDImageMerge support DVD images?==
+ DVD images are not tested, and therefore not officially supported. However, when the different CD-ROM formats are added they should work as well. This will be eventually looked into, and officially supported.
