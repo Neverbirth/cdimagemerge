@@ -3,18 +3,21 @@
 = Summary =
 
  * [FAQ#General_Questions General Questions]:
+  # [FAQ#Why_making_an_application_like_CDImageMerge? Why making an application like CDImageMerge?]
  * [FAQ#CDImageMerge_Questions CDImageMerge Questions]:
   # [FAQ#Which_image_formats_does_CDImageMerge_support? Which image formats does CDImageMerge support?]
   # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
   # [FAQ#Does_CDImageMerge_support_DVD_images? Does CDImageMerge support DVD images?]
+  # [FAQ#Does_CDImageMerge_support_repairing_damaged_sectors? Does CDImageMerge support repairing damaged sectors?]
 
 
 = General Questions =
 
+ * ==Why making an application like CDImageMerge?==
 
 = CDImageMerge Questions =
 
- * == Which image formats does CDImageMerge support?==
+ * ==Which image formats does CDImageMerge support?==
  CDImageMerge only supports images in plain ISO format. As of August, 2011 there are only plans for adding support to parse .CUE and maybe .CCD files.
 
  * ==Which CD-ROM formats does CDImageMerge support?==
@@ -22,3 +25,6 @@
 
  * ==Does CDImageMerge support DVD images?==
  DVD images are not tested, and therefore not officially supported. However, when the different CD-ROM formats are added they should work as well. This will be eventually looked into, and officially supported.
+
+ * ==Does CDImageMerge support repairing damaged sectors?==
+ No, although it would a nice exercise to learn more, I think there are (there is?) already some good applications for this.
