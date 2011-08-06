@@ -1,4 +1,6 @@
-﻿'TODO: Let user choose image mode
+﻿Imports DotNetIsoLib
+
+'TODO: Let user choose image mode
 
 Public Class MainForm
 

@@ -42,21 +42,29 @@ Partial Class MainForm
         Me.DestinationStartNumeric = New System.Windows.Forms.NumericUpDown
         Me.OriginEndNumeric = New System.Windows.Forms.NumericUpDown
         Me.ImageInfoSplitContainer = New System.Windows.Forms.SplitContainer
+        Me.Label1 = New System.Windows.Forms.Label
+        Me.Label2 = New System.Windows.Forms.Label
+        Me.SplitContainer1 = New System.Windows.Forms.SplitContainer
         Me.TreeView1 = New System.Windows.Forms.TreeView
         Me.ListView1 = New System.Windows.Forms.ListView
-        Me.Label1 = New System.Windows.Forms.Label
+        Me.SplitContainer2 = New System.Windows.Forms.SplitContainer
         Me.TreeView2 = New System.Windows.Forms.TreeView
         Me.ListView2 = New System.Windows.Forms.ListView
-        Me.Label2 = New System.Windows.Forms.Label
         Me.ImageInfoGroupBox.SuspendLayout()
         Me.StatusStrip.SuspendLayout()
         Me.GroupBox1.SuspendLayout()
         CType(Me.OriginStartNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DestinationStartNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.OriginEndNumeric, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.ImageInfoSplitContainer.Panel1.SuspendLayout()
-        Me.ImageInfoSplitContainer.Panel2.SuspendLayout()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
         Me.ImageInfoSplitContainer.SuspendLayout()
+        Me.SplitContainer1.Panel1.SuspendLayout()
+        Me.SplitContainer1.Panel2.SuspendLayout()
+        Me.SplitContainer1.SuspendLayout()
+        Me.SplitContainer2.Panel1.SuspendLayout()
+        Me.SplitContainer2.Panel2.SuspendLayout()
+        Me.SplitContainer2.SuspendLayout()
         Me.SuspendLayout()
         '
         'ImageInfoGroupBox
@@ -67,7 +75,7 @@ Partial Class MainForm
         Me.ImageInfoGroupBox.Controls.Add(Me.ImageInfoSplitContainer)
         Me.ImageInfoGroupBox.Location = New System.Drawing.Point(12, 12)
         Me.ImageInfoGroupBox.Name = "ImageInfoGroupBox"
-        Me.ImageInfoGroupBox.Size = New System.Drawing.Size(663, 300)
+        Me.ImageInfoGroupBox.Size = New System.Drawing.Size(709, 332)
         Me.ImageInfoGroupBox.TabIndex = 5
         Me.ImageInfoGroupBox.TabStop = False
         Me.ImageInfoGroupBox.Text = "Information"
@@ -98,9 +106,9 @@ Partial Class MainForm
         'StatusStrip
         '
         Me.StatusStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolStripStatusLabel1, Me.ToolStripProgressBar1})
-        Me.StatusStrip.Location = New System.Drawing.Point(0, 447)
+        Me.StatusStrip.Location = New System.Drawing.Point(0, 479)
         Me.StatusStrip.Name = "StatusStrip"
-        Me.StatusStrip.Size = New System.Drawing.Size(687, 22)
+        Me.StatusStrip.Size = New System.Drawing.Size(733, 22)
         Me.StatusStrip.TabIndex = 7
         Me.StatusStrip.Text = "StatusStrip"
         '
@@ -121,7 +129,7 @@ Partial Class MainForm
         Me.GroupBox1.Controls.Add(Me.OriginStartNumeric)
         Me.GroupBox1.Controls.Add(Me.DestinationStartNumeric)
         Me.GroupBox1.Controls.Add(Me.OriginEndNumeric)
-        Me.GroupBox1.Location = New System.Drawing.Point(12, 318)
+        Me.GroupBox1.Location = New System.Drawing.Point(35, 350)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(663, 126)
         Me.GroupBox1.TabIndex = 8
@@ -258,89 +266,121 @@ Partial Class MainForm
         '
         'ImageInfoSplitContainer.Panel1
         '
-        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.TreeView1)
-        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.ListView1)
+        Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.SplitContainer1)
         Me.ImageInfoSplitContainer.Panel1.Controls.Add(Me.Label1)
         '
         'ImageInfoSplitContainer.Panel2
         '
-        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.TreeView2)
-        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.ListView2)
+        Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.SplitContainer2)
         Me.ImageInfoSplitContainer.Panel2.Controls.Add(Me.Label2)
-        Me.ImageInfoSplitContainer.Size = New System.Drawing.Size(657, 281)
-        Me.ImageInfoSplitContainer.SplitterDistance = 324
+        Me.ImageInfoSplitContainer.Size = New System.Drawing.Size(703, 313)
+        Me.ImageInfoSplitContainer.SplitterDistance = 346
         Me.ImageInfoSplitContainer.SplitterWidth = 2
         Me.ImageInfoSplitContainer.TabIndex = 13
-        '
-        'TreeView1
-        '
-        Me.TreeView1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.TreeView1.Location = New System.Drawing.Point(3, 16)
-        Me.TreeView1.Name = "TreeView1"
-        Me.TreeView1.Size = New System.Drawing.Size(106, 262)
-        Me.TreeView1.TabIndex = 14
-        '
-        'ListView1
-        '
-        Me.ListView1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListView1.Location = New System.Drawing.Point(113, 16)
-        Me.ListView1.Name = "ListView1"
-        Me.ListView1.Size = New System.Drawing.Size(208, 262)
-        Me.ListView1.TabIndex = 13
-        Me.ListView1.UseCompatibleStateImageBehavior = False
         '
         'Label1
         '
         Me.Label1.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(125, 0)
+        Me.Label1.Location = New System.Drawing.Point(136, 0)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(73, 13)
         Me.Label1.TabIndex = 12
         Me.Label1.Text = "Source Image"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
-        'TreeView2
-        '
-        Me.TreeView2.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.TreeView2.Location = New System.Drawing.Point(3, 16)
-        Me.TreeView2.Name = "TreeView2"
-        Me.TreeView2.Size = New System.Drawing.Size(106, 262)
-        Me.TreeView2.TabIndex = 15
-        '
-        'ListView2
-        '
-        Me.ListView2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ListView2.Location = New System.Drawing.Point(113, 16)
-        Me.ListView2.Name = "ListView2"
-        Me.ListView2.Size = New System.Drawing.Size(206, 262)
-        Me.ListView2.TabIndex = 14
-        Me.ListView2.UseCompatibleStateImageBehavior = False
-        '
         'Label2
         '
         Me.Label2.Anchor = System.Windows.Forms.AnchorStyles.Top
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(112, 0)
+        Me.Label2.Location = New System.Drawing.Point(124, 0)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(92, 13)
         Me.Label2.TabIndex = 13
         Me.Label2.Text = "Destination Image"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
+        'SplitContainer1
+        '
+        Me.SplitContainer1.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.SplitContainer1.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer1.Name = "SplitContainer1"
+        '
+        'SplitContainer1.Panel1
+        '
+        Me.SplitContainer1.Panel1.Controls.Add(Me.TreeView1)
+        '
+        'SplitContainer1.Panel2
+        '
+        Me.SplitContainer1.Panel2.Controls.Add(Me.ListView1)
+        Me.SplitContainer1.Size = New System.Drawing.Size(340, 294)
+        Me.SplitContainer1.SplitterDistance = 111
+        Me.SplitContainer1.SplitterWidth = 1
+        Me.SplitContainer1.TabIndex = 15
+        '
+        'TreeView1
+        '
+        Me.TreeView1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TreeView1.Location = New System.Drawing.Point(0, 0)
+        Me.TreeView1.Name = "TreeView1"
+        Me.TreeView1.Size = New System.Drawing.Size(111, 294)
+        Me.TreeView1.TabIndex = 16
+        '
+        'ListView1
+        '
+        Me.ListView1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ListView1.Location = New System.Drawing.Point(0, 0)
+        Me.ListView1.Name = "ListView1"
+        Me.ListView1.Size = New System.Drawing.Size(228, 294)
+        Me.ListView1.TabIndex = 14
+        Me.ListView1.UseCompatibleStateImageBehavior = False
+        '
+        'SplitContainer2
+        '
+        Me.SplitContainer2.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.SplitContainer2.Location = New System.Drawing.Point(3, 16)
+        Me.SplitContainer2.Name = "SplitContainer2"
+        '
+        'SplitContainer2.Panel1
+        '
+        Me.SplitContainer2.Panel1.Controls.Add(Me.TreeView2)
+        '
+        'SplitContainer2.Panel2
+        '
+        Me.SplitContainer2.Panel2.Controls.Add(Me.ListView2)
+        Me.SplitContainer2.Size = New System.Drawing.Size(349, 294)
+        Me.SplitContainer2.SplitterDistance = 113
+        Me.SplitContainer2.SplitterWidth = 1
+        Me.SplitContainer2.TabIndex = 16
+        '
+        'TreeView2
+        '
+        Me.TreeView2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.TreeView2.Location = New System.Drawing.Point(0, 0)
+        Me.TreeView2.Name = "TreeView2"
+        Me.TreeView2.Size = New System.Drawing.Size(113, 294)
+        Me.TreeView2.TabIndex = 16
+        '
+        'ListView2
+        '
+        Me.ListView2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.ListView2.Location = New System.Drawing.Point(0, 0)
+        Me.ListView2.Name = "ListView2"
+        Me.ListView2.Size = New System.Drawing.Size(235, 294)
+        Me.ListView2.TabIndex = 14
+        Me.ListView2.UseCompatibleStateImageBehavior = False
+        '
         'MainForm
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(687, 469)
+        Me.ClientSize = New System.Drawing.Size(733, 501)
         Me.Controls.Add(Me.GroupBox1)
         Me.Controls.Add(Me.StatusStrip)
         Me.Controls.Add(Me.ImageInfoGroupBox)
@@ -355,11 +395,17 @@ Partial Class MainForm
         CType(Me.OriginStartNumeric, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.DestinationStartNumeric, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.OriginEndNumeric, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.ImageInfoSplitContainer.Panel1.ResumeLayout(False)
-        Me.ImageInfoSplitContainer.Panel1.PerformLayout()
-        Me.ImageInfoSplitContainer.Panel2.ResumeLayout(False)
-        Me.ImageInfoSplitContainer.Panel2.PerformLayout()
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.PerformLayout()
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.PerformLayout()
         Me.ImageInfoSplitContainer.ResumeLayout(False)
+        Me.SplitContainer1.Panel1.ResumeLayout(False)
+        Me.SplitContainer1.Panel2.ResumeLayout(False)
+        Me.SplitContainer1.ResumeLayout(False)
+        Me.SplitContainer2.Panel1.ResumeLayout(False)
+        Me.SplitContainer2.Panel2.ResumeLayout(False)
+        Me.SplitContainer2.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -384,11 +430,13 @@ Partial Class MainForm
     Friend WithEvents ActionImportFileRadio As System.Windows.Forms.RadioButton
     Friend WithEvents ActionFillSector As System.Windows.Forms.RadioButton
     Friend WithEvents ImageInfoSplitContainer As System.Windows.Forms.SplitContainer
+    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents Label2 As System.Windows.Forms.Label
+    Friend WithEvents SplitContainer1 As System.Windows.Forms.SplitContainer
     Friend WithEvents TreeView1 As System.Windows.Forms.TreeView
     Friend WithEvents ListView1 As System.Windows.Forms.ListView
-    Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents SplitContainer2 As System.Windows.Forms.SplitContainer
     Friend WithEvents TreeView2 As System.Windows.Forms.TreeView
     Friend WithEvents ListView2 As System.Windows.Forms.ListView
-    Friend WithEvents Label2 As System.Windows.Forms.Label
 
 End Class

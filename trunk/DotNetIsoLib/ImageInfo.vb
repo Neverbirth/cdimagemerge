@@ -86,7 +86,7 @@ Public Class ImageInfo
         Public lsbPathTable2 As Integer ' optional occurrence
         Public msbPathTable1 As Integer ' mandatory occurrence
         Public msbPathTable2 As Integer ' optional occurrence
-        Public rootDirectoryRecord As DirectoryRecord
+        Public rootDirectoryRecord As DirectoryRecordStruct
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public volumeSetIdentifier As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
@@ -143,8 +143,7 @@ Public Class ImageInfo
         '  Public  finderFlags[2] as byte
     End Structure
 
-
-    Private Structure AppleExtension
+    Friend Structure AppleExtension
         '  char  signature[2];    ' $41 $41 - 'AA' famous value
         Public extensionLength As Byte  ' $0E for this ID
         Public systemUseID As Byte  ' 02 = HFS
@@ -153,13 +152,13 @@ Public Class ImageInfo
         '        Public finderFlags(2) As Byte
     End Structure
 
-    Private Structure DirectoryRecord
+    Friend Structure DirectoryRecordStruct
         Public len_dr As Byte       ' directory record length
         Public XARlength As Byte    ' Extended Attribute Record Length
-        Public lsbStart As Integer
-        Public msbStart As Integer  ' 1st logical block where file starts
-        Public lsbDataLength As Integer
-        Public msbDataLength As Integer
+        Public lsbStart As UInteger
+        Public msbStart As UInteger  ' 1st logical block where file starts
+        Public lsbDataLength As UInteger
+        Public msbDataLength As UInteger
         Public year As Byte         ' since 1900
         Public month As Byte
         Public day As Byte
@@ -190,7 +189,7 @@ Public Class ImageInfo
 
     Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
     Private _pathTableRecord As PathTableRecord
-    Private _directories As Dictionary(Of Integer, Directory)
+    Private _directoryRecords As Dictionary(Of Integer, DirectoryRecord)
 
 #End Region
 
@@ -251,7 +250,7 @@ Public Class ImageInfo
         _length = fileInfo.Length
         _mode = mode
         _sectorSize = 2352
-        _directories = New Dictionary(Of Integer, Directory)
+        _directoryRecords = New Dictionary(Of Integer, DirectoryRecord)()
 
         If Not GetPrimaryVolumeDescriptor() Then
 
@@ -261,6 +260,18 @@ Public Class ImageInfo
 #End Region
 
 #Region " Methods "
+
+    Public Function GetDirectories() As IEnumerable(Of DirectoryRecord)
+        Return _directoryRecords.Values.Where(Function(x) x.IsDirectory)
+    End Function
+
+    Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecord)
+
+    End Function
+
+    Public Function GetFiles() As IEnumerable(Of DirectoryRecord)
+        Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+    End Function
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
@@ -316,35 +327,40 @@ Public Class ImageInfo
     End Function
 
     'TODO: Add to collection
-    'TODO: Add IsDirectory check?
-    'TODO: Add Parent property?
     'TODO: Check .
     Private Sub ParseDirectoryRecord(ByVal lba As Integer)
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)
-                Dim lDirectoryRecord As DirectoryRecord
+                Dim directoryRecord As DirectoryRecord
+                Dim directoryRecordStruct As DirectoryRecordStruct
 
                 imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
 
                 Do
-                    lDirectoryRecord = GetDirectoryRecord(binReader)
-                Loop While lDirectoryRecord.len_dr <> 0
+                    directoryRecordStruct = GetDirectoryRecord(binReader)
+
+                    If directoryRecordStruct.len_dr <> 0 Then
+                        directoryRecord = New DirectoryRecord(directoryRecordStruct)
+                        _directoryRecords(directoryRecord.LBA) = directoryRecord
+                    End If
+
+                Loop While directoryRecordStruct.len_dr <> 0
             End Using
         End Using
     End Sub
 
-    Private Function GetDirectoryRecord(ByRef binReader As BinaryReader) As DirectoryRecord
-        Dim returnDirectory As DirectoryRecord
+    Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecordStruct
+        Dim returnDirectory As New DirectoryRecordStruct()
         Dim restBytes As Short
 
         With returnDirectory
             .len_dr = binReader.ReadByte()
             If .len_dr <> 0 Then
                 .XARlength = binReader.ReadByte()
-                .lsbStart = binReader.ReadInt32()
-                .msbStart = binReader.ReadInt32()
-                .lsbDataLength = binReader.ReadInt32()
-                .msbDataLength = binReader.ReadInt32()
+                .lsbStart = binReader.ReadUInt32()
+                .msbStart = binReader.ReadUInt32()
+                .lsbDataLength = binReader.ReadUInt32()
+                .msbDataLength = binReader.ReadUInt32()
                 .year = binReader.ReadByte()
                 .month = binReader.ReadByte()
                 .day = binReader.ReadByte()
@@ -371,11 +387,6 @@ Public Class ImageInfo
         End With
 
         Return returnDirectory
-
-    End Function
-
-    Public Function GetDirectoryRecords(ByVal lba As Integer) As Directory
-
     End Function
 
     Private Function ParseAsciiDateTime(ByVal value As String) As DateTimeOffset?
