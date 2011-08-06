@@ -27,6 +27,13 @@ Public Class DirectoryRecord
         End Get
     End Property
 
+    Private _imageInfo As ImageInfo
+    Public ReadOnly Property ImageInfo() As ImageInfo
+        Get
+            Return _imageInfo
+        End Get
+    End Property
+
     Public ReadOnly Property IsDirectory() As Boolean
         Get
             Return _flags And DirectoryRecordFlags.Directory = DirectoryRecordFlags.Directory
@@ -72,6 +79,24 @@ Public Class DirectoryRecord
 #End Region
 
 #Region " Methods "
+
+    Public Function GetDirectories() As IEnumerable(Of DirectoryRecord)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+
+        'Return _directoryRecords.Values.Where(Function(x) x.IsDirectory)
+    End Function
+
+    Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecord)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+
+
+    End Function
+
+    Public Function GetFiles() As IEnumerable(Of DirectoryRecord)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+
+        'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+    End Function
 
     Private Sub ParseDirectoryRecordData(ByVal value As ImageInfo.DirectoryRecordStruct)
         _flags = value.fileFlags
