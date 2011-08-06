@@ -8,8 +8,12 @@ Public Class ImageInfo
     Private Const HSVOLSTART As Integer = 16    ' where we expect a Primary Volume Descriptor */
     Private Const HSTERMSTART As Integer = 17    ' where we expect the Volume Descriptor Terminator */
 
+    Private Const MISSING_DATE As String = "00000000000000000"
+
     Private Const StdVolType As Byte = 1    ' Primary Volume Descriptor type
     Private Const VolEndType As Byte = 255    ' Volume Descriptor Set Terminator type 
+
+    Private Shared ReadOnly imageModesSectorSize As Dictionary(Of ImageModes, Integer)
 
     '
     ' File Flags for Directory Records
@@ -38,16 +42,7 @@ Public Class ImageInfo
 
 #End Region
 
-    Private _fileName As String
-    Private _sectorSize As Integer
-    Private _length As Long
-    Private _mode As ImageModes
-    Private _totalSectors As Integer
-    Private _totalTime As String
-
-    Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
-    Private _pathTableRecord As PathTableRecord
-    Private _directories As Dictionary(Of Integer, Directory)
+#Region " Structures "
 
     '****************************************************************************/
     '*  Exported Types                                                          */
@@ -149,7 +144,7 @@ Public Class ImageInfo
     End Structure
 
 
-    Public Structure AppleExtension
+    Private Structure AppleExtension
         '  char  signature[2];    ' $41 $41 - 'AA' famous value
         Public extensionLength As Byte  ' $0E for this ID
         Public systemUseID As Byte  ' 02 = HFS
@@ -158,7 +153,7 @@ Public Class ImageInfo
         '        Public finderFlags(2) As Byte
     End Structure
 
-    Public Structure DirectoryRecord
+    Private Structure DirectoryRecord
         Public len_dr As Byte       ' directory record length
         Public XARlength As Byte    ' Extended Attribute Record Length
         Public lsbStart As Integer
@@ -171,7 +166,7 @@ Public Class ImageInfo
         Public hour As Byte
         Public minute As Byte
         Public second As Byte
-        Public gmtOffset As Byte
+        Public gmtOffset As SByte
         Public fileFlags As Byte
         Public interleaveSize As Byte
         Public interleaveSkip As Byte
@@ -184,16 +179,71 @@ Public Class ImageInfo
         ' field, or after its padding byte. */
     End Structure
 
-    Public Structure Directory
-        Private parentDirectoryLba As Integer
-        Public records() As DirectoryRecord
+#End Region
 
-        Public ReadOnly Property Parent() As Directory
-            Get
-                '                Return GetDirectoryRecords(parentDirectoryLba)
-            End Get
-        End Property
-    End Structure
+#Region " Fields "
+
+    Private _sectorSize As Integer
+    Private _length As Long
+    Private _totalSectors As Integer
+    Private _totalTime As String
+
+    Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
+    Private _pathTableRecord As PathTableRecord
+    Private _directories As Dictionary(Of Integer, Directory)
+
+#End Region
+
+#Region " Properties "
+
+    Private _creationDate As DateTimeOffset?
+    Public ReadOnly Property CreationDate() As DateTimeOffset?
+        Get
+            ParseAsciiDateTimeIfNull(_primaryVolumeDescriptor.volumeCreation, _creationDate)
+
+            Return _creationDate
+        End Get
+    End Property
+
+    Private _fileName As String
+    Public ReadOnly Property FileName() As String
+        Get
+            Return _fileName
+        End Get
+    End Property
+
+    Private _mode As ImageModes
+    Public ReadOnly Property Mode() As ImageModes
+        Get
+            Return _mode
+        End Get
+    End Property
+
+    Public ReadOnly Property Publisher() As String
+        Get
+            Return _primaryVolumeDescriptor.publisherIdentifier.TrimEnd()
+        End Get
+    End Property
+
+    Public ReadOnly Property SystemIdentifier() As String
+        Get
+            Return _primaryVolumeDescriptor.systemIdentifier.TrimEnd()
+        End Get
+    End Property
+
+    Public ReadOnly Property VolumeIdentifier() As String
+        Get
+            Return _primaryVolumeDescriptor.volumeIdentifier.TrimEnd()
+        End Get
+    End Property
+
+#End Region
+
+#Region " Constructors "
+
+    Shared Sub New()
+        imageModesSectorSize = New Dictionary(Of ImageModes, Integer)()
+    End Sub
 
     Public Sub New(ByVal fileName As String, ByVal mode As ImageModes)
         Dim fileInfo As FileInfo = New FileInfo(fileName)
@@ -203,8 +253,14 @@ Public Class ImageInfo
         _sectorSize = 2352
         _directories = New Dictionary(Of Integer, Directory)
 
-        GetPrimaryVolumeDescriptor()
+        If Not GetPrimaryVolumeDescriptor() Then
+
+        End If
     End Sub
+
+#End Region
+
+#Region " Methods "
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
@@ -321,5 +377,29 @@ Public Class ImageInfo
     Public Function GetDirectoryRecords(ByVal lba As Integer) As Directory
 
     End Function
+
+    Private Function ParseAsciiDateTime(ByVal value As String) As DateTimeOffset?
+        If value = MISSING_DATE Then
+            Return Nothing
+        Else
+            Dim offsetQuarters As Integer = Convert.ToSByte(value.Last())
+
+            Return New DateTimeOffset(DateTime.ParseExact(value.Substring(0, _primaryVolumeDescriptor.volumeCreation.Length - 1), _
+                                                            "yyyyMMddHHmmssff", Globalization.CultureInfo.InvariantCulture), _
+                                        TimeSpan.FromMinutes(offsetQuarters * 15))
+        End If
+    End Function
+
+    Private Function ParseAsciiDateTimeIfNull(ByVal value As String, <[In](), Out()> ByRef result As DateTimeOffset?) As Boolean
+        If Not result.HasValue Then
+            result = ParseAsciiDateTime(value)
+
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+#End Region
 
 End Class
