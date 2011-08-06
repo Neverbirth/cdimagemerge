@@ -224,6 +224,13 @@ Public Class ImageInfo
         End Get
     End Property
 
+    Private _rootDirectory As DirectoryRecord
+    Public ReadOnly Property RootDirectory() As DirectoryRecord
+        Get
+            Return _rootDirectory
+        End Get
+    End Property
+
     Public ReadOnly Property SystemIdentifier() As String
         Get
             Return _primaryVolumeDescriptor.systemIdentifier.TrimEnd()
@@ -261,16 +268,12 @@ Public Class ImageInfo
 
 #Region " Methods "
 
-    Public Function GetDirectories() As IEnumerable(Of DirectoryRecord)
-        Return _directoryRecords.Values.Where(Function(x) x.IsDirectory)
-    End Function
-
-    Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecord)
+    Public Function GetDirectoryRecord(ByVal lba As Integer) As DirectoryRecord
 
     End Function
 
-    Public Function GetFiles() As IEnumerable(Of DirectoryRecord)
-        Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+    Public Function GetDirectoryRecord(ByVal fileName As String) As DirectoryRecord
+
     End Function
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
@@ -327,8 +330,8 @@ Public Class ImageInfo
     End Function
 
     'TODO: Add to collection
-    'TODO: Check .
-    Private Sub ParseDirectoryRecord(ByVal lba As Integer)
+    'TODO: Check . and ..
+    Friend Sub ParseDirectoryRecord(ByVal lba As Integer)
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)
                 Dim directoryRecord As DirectoryRecord
