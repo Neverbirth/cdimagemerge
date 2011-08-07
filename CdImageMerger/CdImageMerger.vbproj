@@ -83,7 +83,7 @@
     <Compile Include="Actions\CompareSectorsAction.vb" />
     <Compile Include="Actions\ExportSectorsAction.vb" />
     <Compile Include="Actions\FillDestinationSectorAction.vb" />
-    <Compile Include="Actions\ImportFromDestinationAction.vb" />
+    <Compile Include="Actions\ImportFromSourceAction.vb" />
     <Compile Include="Actions\ImportSectorsAction.vb" />
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="BrowseForm.Designer.vb">
@@ -92,7 +92,9 @@
     <Compile Include="BrowseForm.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ICdImageAction.vb" />
+    <Compile Include="Actions\CdImageActionException.vb" />
+    <Compile Include="Actions\ICdImageAction.vb" />
+    <Compile Include="Actions\CdImageActionCollection.vb" />
     <Compile Include="LogForm.Designer.vb">
       <DependentUpon>LogForm.vb</DependentUpon>
     </Compile>
