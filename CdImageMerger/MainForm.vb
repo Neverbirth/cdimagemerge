@@ -7,28 +7,22 @@ Imports System.Reflection
 
 Public Class MainForm
 
+#Region " Constants "
+
     Private Const CDMAGE_OFFSET As Integer = 149
+
+#End Region
+
+#Region " Fields "
 
     Private _origImage As String
     Private _destImage As String
 
     Private _actionCollection As CdImageActionCollection
 
-    Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        _actionCollection = New CdImageActionCollection()
-        _actionCollection.AddFrom(Assembly.GetExecutingAssembly())
+#End Region
 
-        For Each file In Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.CdImageAction.dll")
-            Dim asm As Assembly = Assembly.LoadFrom(file)
-
-            _actionCollection.AddFrom(asm)
-        Next
-
-        ActionCombo.DataSource = _actionCollection.ToArray()
-        ActionCombo.DisplayMember = "Name"
-
-        OpenImages()
-    End Sub
+#Region " Event Handlers "
 
     Private Sub StatusStrip_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles StatusStrip.Resize
         With StatusStrip
@@ -42,8 +36,6 @@ Public Class MainForm
     End Sub
 
     Private Sub ImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StartBtn.Click
-        Me.StartBtn.Enabled = False
-
         Dim currentAction As ICdImageAction = DirectCast(ActionCombo.SelectedValue, ICdImageAction)
 
         If Not CanExecuteAction(currentAction) Then
@@ -51,6 +43,10 @@ Public Class MainForm
 
             Return
         End If
+
+        Me.StartBtn.Enabled = False
+
+        Cursor.Current = Cursors.WaitCursor
 
         Dim origStartPos As Long = OriginStartNumeric.Value - 1
         Dim count As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value - origStartPos) - 1
@@ -73,6 +69,8 @@ Public Class MainForm
             Me.ToolStripStatusLabel1.Text = ex.Message
         End Try
 
+        Cursor.Current = Cursors.Default
+
         Me.StartBtn.Enabled = True
     End Sub
 
@@ -91,6 +89,10 @@ Public Class MainForm
             Me.DestinationStartNumeric.Maximum -= CDMAGE_OFFSET
         End If
     End Sub
+
+#End Region
+
+#Region " Methods "
 
     Private Sub ActionProgress_Callback(ByVal progress As Double)
         Me.ToolStripProgressBar1.Value = progress
@@ -130,6 +132,24 @@ Public Class MainForm
         Return fileSize / imageMode
     End Function
 
+    Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
+        _actionCollection = New CdImageActionCollection()
+        _actionCollection.AddFrom(Assembly.GetExecutingAssembly())
+
+        For Each file In Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.CdImageAction.dll")
+            Dim asm As Assembly = Assembly.LoadFrom(file)
+
+            _actionCollection.AddFrom(asm)
+        Next
+
+        ActionCombo.DataSource = _actionCollection.ToArray()
+        ActionCombo.DisplayMember = "Name"
+
+        OpenImages()
+
+        MyBase.OnLoad(e)
+    End Sub
+
     Private Sub OpenImages()
         Using browseFrm As BrowseForm = New BrowseForm()
             If browseFrm.ShowDialog(Me) = Windows.Forms.DialogResult.OK Then
@@ -145,6 +165,7 @@ Public Class MainForm
 
                 If sectors = -1 Then
                     _origImage = Nothing
+                    imgInfo = Nothing
                     Me.OriginStartNumeric.Enabled = False
                     Me.OriginEndNumeric.Enabled = False
                     MessageBox.Show("Source image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
@@ -157,10 +178,14 @@ Public Class MainForm
                     Me.OriginEndNumeric.Maximum = sectors + If(CdMageOffsetChk.Checked, 150, 0)
                 End If
 
+                SourceImageExplorerView.ImageInfo = imgInfo
+
+                imgInfo = New ImageInfo(_destImage, ImageInfo.ImageModes.ModeTwo2352)
                 sectors = GetImageSectors(_destImage, 2352)
 
                 If sectors = -1 Then
                     _destImage = Nothing
+                    imgInfo = Nothing
                     Me.DestinationStartNumeric.Enabled = False
                     MessageBox.Show("Destination image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
                 Else
@@ -170,8 +195,11 @@ Public Class MainForm
                     Me.DestinationStartNumeric.Maximum = sectors - 1 + If(CdMageOffsetChk.Checked, 150, 0)
                 End If
 
+                DestinationImageExplorerView.ImageInfo = imgInfo
             End If
         End Using
     End Sub
+
+#End Region
 
 End Class
