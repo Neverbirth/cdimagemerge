@@ -8,7 +8,7 @@ Public Class ImageInfo
     Private Const HSVOLSTART As Integer = 16    ' where we expect a Primary Volume Descriptor */
     Private Const HSTERMSTART As Integer = 17    ' where we expect the Volume Descriptor Terminator */
 
-    Private Const MISSING_DATE As String = "00000000000000000"
+    Private Const MISSING_DATE As String = "0000000000000000" + ControlChars.NullChar
 
     Private Const StdVolType As Byte = 1    ' Primary Volume Descriptor type
     Private Const VolEndType As Byte = 255    ' Volume Descriptor Set Terminator type 

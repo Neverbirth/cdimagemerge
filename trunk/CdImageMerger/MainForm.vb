@@ -1,5 +1,8 @@
 ﻿Imports DotNetIsoLib
 
+Imports System.IO
+Imports System.Reflection
+
 'TODO: Let user choose image mode
 
 Public Class MainForm
@@ -9,10 +12,22 @@ Public Class MainForm
     Private _origImage As String
     Private _destImage As String
 
-    Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        OpenImages()
+    Private _actionCollection As CdImageActionCollection
 
-        Me.StartBtn.Enabled = (_origImage <> String.Empty AndAlso _destImage <> String.Empty)
+    Private Sub MainForm_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        _actionCollection = New CdImageActionCollection()
+        _actionCollection.AddFrom(Assembly.GetExecutingAssembly())
+
+        For Each file In Directory.GetFiles(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "*.CdImageAction.dll")
+            Dim asm As Assembly = Assembly.LoadFrom(file)
+
+            _actionCollection.AddFrom(asm)
+        Next
+
+        ActionCombo.DataSource = _actionCollection.ToArray()
+        ActionCombo.DisplayMember = "Name"
+
+        OpenImages()
     End Sub
 
     Private Sub StatusStrip_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles StatusStrip.Resize
@@ -24,224 +39,42 @@ Public Class MainForm
 
     Private Sub Open_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles OpenBtn.Click
         OpenImages()
-
-        Me.StartBtn.Enabled = (_origImage <> String.Empty AndAlso _destImage <> String.Empty)
     End Sub
-
-    Private Sub OpenImages()
-        Using browseFrm As BrowseForm = New BrowseForm
-            If browseFrm.ShowDialog = Windows.Forms.DialogResult.OK Then
-                Dim imgInfo As ImageInfo
-                Dim sectors As Integer
-
-                _origImage = browseFrm.OriginImage
-                _destImage = browseFrm.DestinationImage
-
-                imgInfo = New ImageInfo(_origImage, ImageInfo.ImageModes.ModeTwo2352)
-
-                sectors = GetImageSectors(_origImage, 2352)
-
-                If sectors = -1 Then
-                    MessageBox.Show("Source image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
-                    Return
-                End If
-
-                '                Me.OrigPathLabel.Text = _origImage
-                '                Me.OrigSectorsLabel.Text = sectors.ToString()
-                Me.OriginStartNumeric.Maximum = sectors - 1 + If(CdMageOffsetChk.Checked, 150, 0)
-                Me.OriginEndNumeric.Maximum = sectors + If(CdMageOffsetChk.Checked, 150, 0)
-
-                sectors = GetImageSectors(_destImage, 2352)
-
-                If sectors = -1 Then
-                    MessageBox.Show("Destination image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
-                    Return
-                End If
-
-                '                Me.DestPathLabel.Text = _destImage
-                '                Me.DestSectorsLabel.Text = sectors.ToString()
-                Me.DestinationStartNumeric.Maximum = sectors - 1 + If(CdMageOffsetChk.Checked, 150, 0)
-            End If
-        End Using
-    End Sub
-
-    Private Function GetImageSectors(ByVal imagePath As String, ByVal imageMode As Integer) As Integer
-        Dim fileInfo As IO.FileInfo
-        Dim fileSize As Long
-
-        fileInfo = New IO.FileInfo(imagePath)
-        fileSize = fileInfo.Length
-
-        If fileSize Mod imageMode <> 0 Then
-            Return -1
-        End If
-
-        Return fileSize / imageMode
-    End Function
 
     Private Sub ImportButton_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles StartBtn.Click
-        Dim retVal As Integer
-
         Me.StartBtn.Enabled = False
 
-        If ActionCompareRadio.Checked Then
-            Me.ToolStripStatusLabel1.Text = "Comparing sectors..."
-            retVal = CompareSectors()
-        ElseIf ActionImportImgRadio.Checked Then
-            Me.ToolStripStatusLabel1.Text = "Importing sectors from source image..."
-            retVal = ImportSectors()
-        ElseIf ActionFillSector.Checked Then
-            Me.ToolStripStatusLabel1.Text = "Filling sectors of source image..."
-            retVal = FillSectors(0)
+        Dim currentAction As ICdImageAction = DirectCast(ActionCombo.SelectedValue, ICdImageAction)
+
+        If Not CanExecuteAction(currentAction) Then
+            MessageBox.Show("Cannot execute action, it needs more data than the provided", "Attention", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1)
+
+            Return
         End If
 
-        Select Case retVal
-            Case 0
-                MessageBox.Show("Operation finished succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Me.ToolStripStatusLabel1.Text = "Operation successfully completed"
-            Case 1
-                MessageBox.Show("Operation didn't finish succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Me.ToolStripStatusLabel1.Text = "Source file is in use by another program"
-            Case 2
-                MessageBox.Show("Operation didn't finish succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Me.ToolStripStatusLabel1.Text = "Destination file is in use by another program"
-        End Select
+        Dim origStartPos As Long = OriginStartNumeric.Value - 1
+        Dim count As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value - origStartPos) - 1
+        Dim destPos As Long = DestinationStartNumeric.Value - 1
+
+        If CdMageOffsetChk.Checked Then
+            origStartPos -= CDMAGE_OFFSET
+            destPos -= CDMAGE_OFFSET
+        End If
+
+        Try
+            Me.ToolStripStatusLabel1.Text = currentAction.Description
+
+            currentAction.Execute(_origImage, _destImage, origStartPos, destPos, count)
+
+            MessageBox.Show("Operation finished succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1)
+            Me.ToolStripStatusLabel1.Text = "Operation successfully completed"
+        Catch ex As Exception
+            MessageBox.Show("Error performing action: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
+            Me.ToolStripStatusLabel1.Text = ex.Message
+        End Try
 
         Me.StartBtn.Enabled = True
     End Sub
-
-    Private Function CompareSectors() As Integer
-        Using originalFileStream As IO.FileStream = New IO.FileStream(_origImage, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite, 2352)
-            Using destinationFileStream As IO.FileStream = New IO.FileStream(_destImage, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite, 2352)
-                Using originalBinReader = New IO.BinaryReader(originalFileStream)
-                    Using destinationBinReader = New IO.BinaryReader(destinationFileStream)
-                        Dim buffer As Byte(), destBuffer As Byte()
-                        Dim i As Long, progressStart As Long
-                        Dim origStartPos As Long = OriginStartNumeric.Value - 1
-                        Dim origEndPos As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value) - 1
-                        Dim destPos As Long = DestinationStartNumeric.Value - 1
-                        Dim differentSectors As New List(Of String)()
-
-                        If CdMageOffsetChk.Checked Then
-                            origStartPos -= CDMAGE_OFFSET
-                            origEndPos -= CDMAGE_OFFSET
-                            destPos -= CDMAGE_OFFSET
-                        End If
-
-                        originalFileStream.Seek(origStartPos * 2352, IO.SeekOrigin.Begin)
-                        destinationFileStream.Seek(destPos * 2352, IO.SeekOrigin.Begin)
-
-                        progressStart = originalFileStream.Position
-
-                        i = origStartPos
-
-                        Do
-                            buffer = originalBinReader.ReadBytes(2352)
-                            destBuffer = destinationBinReader.ReadBytes(2352)
-
-                            For j As Integer = 0 To destBuffer.GetUpperBound(0)
-                                If buffer(j) <> destBuffer(j) Then
-                                    differentSectors.Add((If(CdMageOffsetChk.Checked, i + 150, i)).ToString())
-                                    Exit For
-                                End If
-                            Next
-
-                            Me.ToolStripProgressBar1.Value = Math.Round((originalFileStream.Position - progressStart) / originalFileStream.Length * 100)
-                            i += 1
-                            Application.DoEvents()
-                        Loop While i <= origEndPos AndAlso originalFileStream.Position <= originalFileStream.Length
-
-                        Dim log As New LogForm
-                        log.TextBox1.Text = String.Join(System.Environment.NewLine, differentSectors.ToArray())
-                        log.Text += " - " + differentSectors.Count.ToString() + " different sectors"
-                        log.Show(Me)
-                        Return 0
-                    End Using
-                End Using
-            End Using
-        End Using
-    End Function
-
-    Private Function ImportSectors() As Integer
-        Using originalFileStream As IO.FileStream = New IO.FileStream(_origImage, IO.FileMode.Open, IO.FileAccess.Read, IO.FileShare.ReadWrite, 2352)
-            Using destinationFileStream As IO.FileStream = New IO.FileStream(_destImage, IO.FileMode.Open, IO.FileAccess.Write, IO.FileShare.Write, 2352)
-                Using originalBinReader = New IO.BinaryReader(originalFileStream)
-                    Using destinationBinWriter = New IO.BinaryWriter(destinationFileStream)
-                        Dim buffer As Byte()
-                        Dim i As Long, progressStart As Long
-                        Dim origStartPos As Long = OriginStartNumeric.Value - 1
-                        Dim origEndPos As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value) - 1
-                        Dim destPos As Long = DestinationStartNumeric.Value - 1
-
-                        If CdMageOffsetChk.Checked Then
-                            origStartPos -= CDMAGE_OFFSET
-                            origEndPos -= CDMAGE_OFFSET
-                            destPos -= CDMAGE_OFFSET
-                        End If
-
-                        originalFileStream.Seek(origStartPos * 2352, IO.SeekOrigin.Begin)
-                        destinationFileStream.Seek(destPos * 2352, IO.SeekOrigin.Begin)
-
-                        progressStart = originalFileStream.Position
-
-                        i = origStartPos
-
-                        Do
-                            buffer = originalBinReader.ReadBytes(2352)
-                            destinationBinWriter.Write(buffer)
-
-                            Me.ToolStripProgressBar1.Value = Math.Round((originalFileStream.Position - progressStart) / originalFileStream.Length * 100)
-                            i += 1
-                            Application.DoEvents()
-                        Loop While i <= origEndPos AndAlso originalFileStream.Position <= originalFileStream.Length
-
-                        destinationBinWriter.Flush()
-
-                        Return 0
-                    End Using
-                End Using
-            End Using
-        End Using
-    End Function
-
-    Private Function FillSectors(ByVal character As Byte) As Integer
-        Using destinationFileStream As IO.FileStream = New IO.FileStream(_destImage, IO.FileMode.Open, IO.FileAccess.Write, IO.FileShare.Write, 2352)
-            Using destinationBinWriter = New IO.BinaryWriter(destinationFileStream)
-                Dim buffer As Byte()
-                Dim i As Long, progressStart As Long
-                Dim origStartPos As Long = OriginStartNumeric.Value - 1
-                Dim origEndPos As Long = If(OriginEndNumeric.Value = 0, OriginEndNumeric.Maximum, OriginEndNumeric.Value) - 1
-                Dim destPos As Long = DestinationStartNumeric.Value - 1
-
-                If CdMageOffsetChk.Checked Then
-                    origStartPos -= CDMAGE_OFFSET
-                    origEndPos -= CDMAGE_OFFSET
-                    destPos -= CDMAGE_OFFSET
-                End If
-
-                destinationFileStream.Seek(destPos * 2352, IO.SeekOrigin.Begin)
-
-                progressStart = destinationFileStream.Position
-
-                buffer = New Byte(2352) {}
-                buffer = Enumerable.Range(0, 2352).Select(Function(value As Integer) character).ToArray()
-
-                i = origStartPos
-                Me.ToolStripProgressBar1.Value = Math.Round((destinationFileStream.Position - progressStart) / destinationFileStream.Length * 100)
-                Do
-                    destinationBinWriter.Write(buffer)
-
-                    Me.ToolStripProgressBar1.Value = Math.Round((destinationFileStream.Position - progressStart) / destinationFileStream.Length * 100)
-                    i += 1
-                    Application.DoEvents()
-                Loop While i <= origEndPos AndAlso destinationFileStream.Position <= destinationFileStream.Length
-
-                destinationBinWriter.Flush()
-
-                Return 0
-            End Using
-        End Using
-    End Function
 
     Private Sub CdMageOffsetChk_CheckedChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles CdMageOffsetChk.CheckedChanged
         If DirectCast(sender, CheckBox).Checked Then
@@ -257,6 +90,88 @@ Public Class MainForm
             Me.OriginStartNumeric.Maximum -= CDMAGE_OFFSET
             Me.DestinationStartNumeric.Maximum -= CDMAGE_OFFSET
         End If
+    End Sub
+
+    Private Sub ActionProgress_Callback(ByVal progress As Double)
+        Me.ToolStripProgressBar1.Value = progress
+        Application.DoEvents()
+    End Sub
+
+    Private Function CanExecuteAction(ByVal action As ICdImageAction) As Boolean
+        Select Case action.NeedsImage
+            Case ImageNeed.None
+                Return True
+
+            Case ImageNeed.Source
+                Return Not String.IsNullOrEmpty(_origImage)
+
+            Case ImageNeed.Destination
+                Return Not String.IsNullOrEmpty(_destImage)
+
+            Case ImageNeed.Both
+                Return Not String.IsNullOrEmpty(_destImage) AndAlso Not String.IsNullOrEmpty(_origImage)
+
+            Case Else
+                Throw New InvalidOperationException("Action with unknown value")
+        End Select
+    End Function
+
+    Private Function GetImageSectors(ByVal imagePath As String, ByVal imageMode As Integer) As Integer
+        Dim fileInfo As IO.FileInfo
+        Dim fileSize As Long
+
+        fileInfo = New IO.FileInfo(imagePath)
+        fileSize = fileInfo.Length
+
+        If fileSize Mod imageMode <> 0 Then
+            Return -1
+        End If
+
+        Return fileSize / imageMode
+    End Function
+
+    Private Sub OpenImages()
+        Using browseFrm As BrowseForm = New BrowseForm()
+            If browseFrm.ShowDialog(Me) = Windows.Forms.DialogResult.OK Then
+                Dim imgInfo As ImageInfo
+                Dim sectors As Integer
+
+                _origImage = browseFrm.OriginImage
+                _destImage = browseFrm.DestinationImage
+
+                imgInfo = New ImageInfo(_origImage, ImageInfo.ImageModes.ModeTwo2352)
+
+                sectors = GetImageSectors(_origImage, 2352)
+
+                If sectors = -1 Then
+                    _origImage = Nothing
+                    Me.OriginStartNumeric.Enabled = False
+                    Me.OriginEndNumeric.Enabled = False
+                    MessageBox.Show("Source image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
+                Else
+                    '                Me.OrigPathLabel.Text = _origImage
+                    '                Me.OrigSectorsLabel.Text = sectors.ToString()
+                    Me.OriginStartNumeric.Enabled = True
+                    Me.OriginEndNumeric.Enabled = True
+                    Me.OriginStartNumeric.Maximum = sectors - 1 + If(CdMageOffsetChk.Checked, 150, 0)
+                    Me.OriginEndNumeric.Maximum = sectors + If(CdMageOffsetChk.Checked, 150, 0)
+                End If
+
+                sectors = GetImageSectors(_destImage, 2352)
+
+                If sectors = -1 Then
+                    _destImage = Nothing
+                    Me.DestinationStartNumeric.Enabled = False
+                    MessageBox.Show("Destination image total size doesn't coincide with block size", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error, MessageBoxDefaultButton.Button1)
+                Else
+                    '                Me.DestPathLabel.Text = _destImage
+                    '                Me.DestSectorsLabel.Text = sectors.ToString()
+                    Me.DestinationStartNumeric.Enabled = True
+                    Me.DestinationStartNumeric.Maximum = sectors - 1 + If(CdMageOffsetChk.Checked, 150, 0)
+                End If
+
+            End If
+        End Using
     End Sub
 
 End Class
