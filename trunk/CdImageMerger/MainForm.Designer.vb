@@ -24,9 +24,7 @@ Partial Class MainForm
     Private Sub InitializeComponent()
         Me.ImageInfoGroupBox = New System.Windows.Forms.GroupBox
         Me.ImageInfoSplitContainer = New System.Windows.Forms.SplitContainer
-        Me.SourceImageExplorerView = New CdImageMerger.ExplorerView
         Me.Label1 = New System.Windows.Forms.Label
-        Me.DestinationImageExplorerView = New CdImageMerger.ExplorerView
         Me.Label2 = New System.Windows.Forms.Label
         Me.OpenBtn = New System.Windows.Forms.Button
         Me.ToolStripStatusLabel1 = New System.Windows.Forms.ToolStripStatusLabel
@@ -42,6 +40,8 @@ Partial Class MainForm
         Me.OriginStartNumeric = New System.Windows.Forms.NumericUpDown
         Me.DestinationStartNumeric = New System.Windows.Forms.NumericUpDown
         Me.OriginEndNumeric = New System.Windows.Forms.NumericUpDown
+        Me.SourceImageExplorerView = New CdImageMerger.ExplorerView
+        Me.DestinationImageExplorerView = New CdImageMerger.ExplorerView
         Me.ImageInfoGroupBox.SuspendLayout()
         Me.ImageInfoSplitContainer.Panel1.SuspendLayout()
         Me.ImageInfoSplitContainer.Panel2.SuspendLayout()
@@ -62,7 +62,7 @@ Partial Class MainForm
         Me.ImageInfoGroupBox.Location = New System.Drawing.Point(12, 12)
         Me.ImageInfoGroupBox.Name = "ImageInfoGroupBox"
         Me.ImageInfoGroupBox.Size = New System.Drawing.Size(704, 330)
-        Me.ImageInfoGroupBox.TabIndex = 5
+        Me.ImageInfoGroupBox.TabIndex = 0
         Me.ImageInfoGroupBox.TabStop = False
         Me.ImageInfoGroupBox.Text = "Information"
         '
@@ -84,18 +84,7 @@ Partial Class MainForm
         Me.ImageInfoSplitContainer.Size = New System.Drawing.Size(698, 311)
         Me.ImageInfoSplitContainer.SplitterDistance = 343
         Me.ImageInfoSplitContainer.SplitterWidth = 2
-        Me.ImageInfoSplitContainer.TabIndex = 13
-        '
-        'SourceImageExplorerView
-        '
-        Me.SourceImageExplorerView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.SourceImageExplorerView.ImageInfo = Nothing
-        Me.SourceImageExplorerView.Location = New System.Drawing.Point(0, 16)
-        Me.SourceImageExplorerView.Name = "SourceImageExplorerView"
-        Me.SourceImageExplorerView.Size = New System.Drawing.Size(343, 295)
-        Me.SourceImageExplorerView.TabIndex = 13
+        Me.ImageInfoSplitContainer.TabIndex = 0
         '
         'Label1
         '
@@ -105,20 +94,9 @@ Partial Class MainForm
         Me.Label1.Location = New System.Drawing.Point(127, 0)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(73, 13)
-        Me.Label1.TabIndex = 12
+        Me.Label1.TabIndex = 0
         Me.Label1.Text = "Source Image"
         Me.Label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
-        '
-        'DestinationImageExplorerView
-        '
-        Me.DestinationImageExplorerView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.DestinationImageExplorerView.ImageInfo = Nothing
-        Me.DestinationImageExplorerView.Location = New System.Drawing.Point(0, 16)
-        Me.DestinationImageExplorerView.Name = "DestinationImageExplorerView"
-        Me.DestinationImageExplorerView.Size = New System.Drawing.Size(353, 295)
-        Me.DestinationImageExplorerView.TabIndex = 14
         '
         'Label2
         '
@@ -128,7 +106,7 @@ Partial Class MainForm
         Me.Label2.Location = New System.Drawing.Point(134, 0)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(92, 13)
-        Me.Label2.TabIndex = 13
+        Me.Label2.TabIndex = 0
         Me.Label2.Text = "Destination Image"
         Me.Label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
@@ -138,7 +116,7 @@ Partial Class MainForm
         Me.OpenBtn.Location = New System.Drawing.Point(464, 97)
         Me.OpenBtn.Name = "OpenBtn"
         Me.OpenBtn.Size = New System.Drawing.Size(75, 23)
-        Me.OpenBtn.TabIndex = 6
+        Me.OpenBtn.TabIndex = 9
         Me.OpenBtn.Text = "&Open"
         Me.OpenBtn.UseVisualStyleBackColor = True
         '
@@ -161,7 +139,7 @@ Partial Class MainForm
         Me.StatusStrip.Location = New System.Drawing.Point(0, 477)
         Me.StatusStrip.Name = "StatusStrip"
         Me.StatusStrip.Size = New System.Drawing.Size(728, 22)
-        Me.StatusStrip.TabIndex = 7
+        Me.StatusStrip.TabIndex = 2
         Me.StatusStrip.Text = "StatusStrip"
         '
         'GroupBox1
@@ -180,7 +158,7 @@ Partial Class MainForm
         Me.GroupBox1.Location = New System.Drawing.Point(33, 348)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Size = New System.Drawing.Size(663, 126)
-        Me.GroupBox1.TabIndex = 8
+        Me.GroupBox1.TabIndex = 1
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Action"
         '
@@ -191,7 +169,7 @@ Partial Class MainForm
         Me.ActionCombo.Location = New System.Drawing.Point(9, 19)
         Me.ActionCombo.Name = "ActionCombo"
         Me.ActionCombo.Size = New System.Drawing.Size(211, 21)
-        Me.ActionCombo.TabIndex = 8
+        Me.ActionCombo.TabIndex = 0
         '
         'Label7
         '
@@ -199,7 +177,7 @@ Partial Class MainForm
         Me.Label7.Location = New System.Drawing.Point(226, 47)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(119, 13)
-        Me.Label7.TabIndex = 7
+        Me.Label7.TabIndex = 3
         Me.Label7.Text = "Destination Start Sector"
         '
         'Label5
@@ -208,7 +186,7 @@ Partial Class MainForm
         Me.Label5.Location = New System.Drawing.Point(6, 47)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(100, 13)
-        Me.Label5.TabIndex = 5
+        Me.Label5.TabIndex = 1
         Me.Label5.Text = "Source Start Sector"
         '
         'CdMageOffsetChk
@@ -219,7 +197,7 @@ Partial Class MainForm
         Me.CdMageOffsetChk.Location = New System.Drawing.Point(229, 72)
         Me.CdMageOffsetChk.Name = "CdMageOffsetChk"
         Me.CdMageOffsetChk.Size = New System.Drawing.Size(155, 17)
-        Me.CdMageOffsetChk.TabIndex = 4
+        Me.CdMageOffsetChk.TabIndex = 8
         Me.CdMageOffsetChk.Text = "Use CDMage Sector Offset"
         Me.CdMageOffsetChk.UseVisualStyleBackColor = True
         '
@@ -228,7 +206,7 @@ Partial Class MainForm
         Me.StartBtn.Location = New System.Drawing.Point(464, 42)
         Me.StartBtn.Name = "StartBtn"
         Me.StartBtn.Size = New System.Drawing.Size(75, 23)
-        Me.StartBtn.TabIndex = 0
+        Me.StartBtn.TabIndex = 5
         Me.StartBtn.Text = "Start"
         Me.StartBtn.UseVisualStyleBackColor = True
         '
@@ -253,14 +231,36 @@ Partial Class MainForm
         Me.DestinationStartNumeric.Location = New System.Drawing.Point(352, 45)
         Me.DestinationStartNumeric.Name = "DestinationStartNumeric"
         Me.DestinationStartNumeric.Size = New System.Drawing.Size(108, 20)
-        Me.DestinationStartNumeric.TabIndex = 1
+        Me.DestinationStartNumeric.TabIndex = 4
         '
         'OriginEndNumeric
         '
         Me.OriginEndNumeric.Location = New System.Drawing.Point(112, 71)
         Me.OriginEndNumeric.Name = "OriginEndNumeric"
         Me.OriginEndNumeric.Size = New System.Drawing.Size(108, 20)
-        Me.OriginEndNumeric.TabIndex = 3
+        Me.OriginEndNumeric.TabIndex = 7
+        '
+        'SourceImageExplorerView
+        '
+        Me.SourceImageExplorerView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.SourceImageExplorerView.ImageInfo = Nothing
+        Me.SourceImageExplorerView.Location = New System.Drawing.Point(0, 16)
+        Me.SourceImageExplorerView.Name = "SourceImageExplorerView"
+        Me.SourceImageExplorerView.Size = New System.Drawing.Size(342, 295)
+        Me.SourceImageExplorerView.TabIndex = 1
+        '
+        'DestinationImageExplorerView
+        '
+        Me.DestinationImageExplorerView.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.DestinationImageExplorerView.ImageInfo = Nothing
+        Me.DestinationImageExplorerView.Location = New System.Drawing.Point(0, 16)
+        Me.DestinationImageExplorerView.Name = "DestinationImageExplorerView"
+        Me.DestinationImageExplorerView.Size = New System.Drawing.Size(353, 295)
+        Me.DestinationImageExplorerView.TabIndex = 1
         '
         'MainForm
         '
