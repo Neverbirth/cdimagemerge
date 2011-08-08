@@ -11,6 +11,7 @@
   # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
   # [FAQ#Does_CDImageMerge_support_DVD_images? Does CDImageMerge support DVD images?]
   # [FAQ#Does_CDImageMerge_support_repairing_damaged_sectors? Does CDImageMerge support repairing damaged sectors?]
+  # [FAQ#Are_multi-session_CDs_supported? Are multi-session CDs supported?]
  * [FAQ#Extensibility_Questions Extensibility Questions]:
   # [FAQ#Can_I_extend_CDImageMerge_functionality? Can I extend CDImageMerge functionality?]
 
@@ -37,6 +38,9 @@
 
  * ==Does CDImageMerge support repairing damaged sectors?==
  No, although it would a nice exercise to learn more, I think there are (there is?) already some good applications for this.
+
+ * ==Are multi-session CDs supported?==
+ No, I haven't been able to test any. If I ever have the chance to do so, I'll be willing to add support for them.
 
 
 = Extensibility Questions =
