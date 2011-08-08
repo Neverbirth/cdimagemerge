@@ -5,7 +5,7 @@
 
  * [FAQ#General_Questions General Questions]:
   # [FAQ#Why_making_an_application_like_CDImageMerge? Why making an application like CDImageMerge?]
-  # [FAQ#Why_using_VB.NET? Why using VB.NET for?]
+  # [FAQ#Why_using_VB.NET? Why using VB.NET?]
  * [FAQ#CDImageMerge_Questions CDImageMerge Questions]:
   # [FAQ#Which_image_formats_does_CDImageMerge_support? Which image formats does CDImageMerge support?]
   # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
