@@ -10,6 +10,9 @@ Public Class ImageInfo
 
     Private Const MISSING_DATE As String = "0000000000000000" + ControlChars.NullChar
 
+    Private Const DOT_DIRECTORY As String = ControlChars.NullChar
+    Private Const PARENT_DIRECTORY As String = Chr(0)   'I hate to use these VB methods
+
     Private Const StdVolType As Byte = 1    ' Primary Volume Descriptor type
     Private Const VolEndType As Byte = 255    ' Volume Descriptor Set Terminator type 
 
@@ -269,11 +272,73 @@ Public Class ImageInfo
 #Region " Methods "
 
     Public Function GetDirectoryRecord(ByVal lba As Integer) As DirectoryRecord
+        Dim retVal As DirectoryRecord = Nothing
 
+        If Not _directoryRecords.TryGetValue(lba, retVal) Then
+
+        End If
+
+        Return retVal
     End Function
 
-    Public Function GetDirectoryRecord(ByVal fileName As String) As DirectoryRecord
+    ' TODO: Allow wildcards inside the filePath
+    Public Function GetDirectoryRecord(ByVal filePath As String) As DirectoryRecord
+        If Not filePath.Contains("/"c) Then
+            Throw New ArgumentException("The path provided doesn't have a valid format")
+        End If
 
+        Dim filePathParts As String() = FileName.Split("/"c)
+        Dim currentRecord As DirectoryRecord = _rootDirectory
+
+        For i As Integer = 0 To filePathParts.Length - 1
+            Dim j As Integer = i    ' To suppress warning...
+
+            currentRecord = currentRecord.GetFiles().Where(Function(x) x.Name = filePathParts(j)).FirstOrDefault()
+
+            If currentRecord Is Nothing Then Exit For
+        Next
+
+        Return currentRecord
+    End Function
+
+    Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecordStruct
+        Dim returnDirectory As New DirectoryRecordStruct()
+        Dim restBytes As Short
+
+        With returnDirectory
+            .len_dr = binReader.ReadByte()
+            If .len_dr <> 0 Then
+                .XARlength = binReader.ReadByte()
+                .lsbStart = binReader.ReadUInt32()
+                .msbStart = binReader.ReadUInt32()
+                .lsbDataLength = binReader.ReadUInt32()
+                .msbDataLength = binReader.ReadUInt32()
+                .year = binReader.ReadByte()
+                .month = binReader.ReadByte()
+                .day = binReader.ReadByte()
+                .hour = binReader.ReadByte()
+                .minute = binReader.ReadByte()
+                .second = binReader.ReadByte()
+                .gmtOffset = binReader.ReadByte()
+                .fileFlags = binReader.ReadByte()
+                .interleaveSize = binReader.ReadByte()
+                .interleaveSkip = binReader.ReadByte()
+                .lsbVolSetSeqNum = binReader.ReadInt16()
+                .msbVolSetSeqNum = binReader.ReadInt16()
+                .len_fi = binReader.ReadByte()
+                .fi = System.Text.Encoding.Default.GetString(binReader.ReadBytes(.len_fi))
+                restBytes = .len_dr - 33 - .len_fi
+                If .len_fi Mod 2 = 0 Then
+                    binReader.ReadByte()
+                    restBytes -= 1
+                End If
+                If restBytes > 0 Then
+                    binReader.ReadBytes(restBytes)
+                End If
+            End If
+        End With
+
+        Return returnDirectory
     End Function
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
@@ -321,75 +386,13 @@ Public Class ImageInfo
                     .volumeExpiration = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
                     .volumeEffective = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
 
+                    ParsePathTable(.lsbPathTable1)
                     ParseDirectoryRecord(.rootDirectoryRecord.lsbStart)
                 End With
             End Using
         End Using
 
         Return True
-    End Function
-
-    'TODO: Add to collection
-    'TODO: Check . and ..
-    Friend Sub ParseDirectoryRecord(ByVal lba As Integer)
-        Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
-            Using binReader As BinaryReader = New BinaryReader(imageStream)
-                Dim directoryRecord As DirectoryRecord
-                Dim directoryRecordStruct As DirectoryRecordStruct
-
-                imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
-
-                Do
-                    directoryRecordStruct = GetDirectoryRecord(binReader)
-
-                    If directoryRecordStruct.len_dr <> 0 Then
-                        directoryRecord = New DirectoryRecord(directoryRecordStruct)
-                        _directoryRecords(directoryRecord.LBA) = directoryRecord
-                    End If
-
-                Loop While directoryRecordStruct.len_dr <> 0
-            End Using
-        End Using
-    End Sub
-
-    Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecordStruct
-        Dim returnDirectory As New DirectoryRecordStruct()
-        Dim restBytes As Short
-
-        With returnDirectory
-            .len_dr = binReader.ReadByte()
-            If .len_dr <> 0 Then
-                .XARlength = binReader.ReadByte()
-                .lsbStart = binReader.ReadUInt32()
-                .msbStart = binReader.ReadUInt32()
-                .lsbDataLength = binReader.ReadUInt32()
-                .msbDataLength = binReader.ReadUInt32()
-                .year = binReader.ReadByte()
-                .month = binReader.ReadByte()
-                .day = binReader.ReadByte()
-                .hour = binReader.ReadByte()
-                .minute = binReader.ReadByte()
-                .second = binReader.ReadByte()
-                .gmtOffset = binReader.ReadByte()
-                .fileFlags = binReader.ReadByte()
-                .interleaveSize = binReader.ReadByte()
-                .interleaveSkip = binReader.ReadByte()
-                .lsbVolSetSeqNum = binReader.ReadInt16()
-                .msbVolSetSeqNum = binReader.ReadInt16()
-                .len_fi = binReader.ReadByte()
-                .fi = System.Text.Encoding.Default.GetString(binReader.ReadBytes(.len_fi))
-                restBytes = .len_dr - 33 - .len_fi
-                If .len_fi Mod 2 = 0 Then
-                    binReader.ReadByte()
-                    restBytes -= 1
-                End If
-                If restBytes > 0 Then
-                    binReader.ReadBytes(restBytes)
-                End If
-            End If
-        End With
-
-        Return returnDirectory
     End Function
 
     Private Function ParseAsciiDateTime(ByVal value As String) As DateTimeOffset?
@@ -413,6 +416,51 @@ Public Class ImageInfo
             Return False
         End If
     End Function
+
+    Friend Sub ParseDirectoryRecord(ByVal lba As Integer)
+        Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
+            Using binReader As BinaryReader = New BinaryReader(imageStream)
+                Dim directoryRecordStruct As DirectoryRecordStruct
+                Dim currentDirectory As DirectoryRecord = Nothing
+                Dim parentDirectory As DirectoryRecord = Nothing
+                Dim directoryRecord As DirectoryRecord
+
+                imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
+
+                Do
+                    directoryRecordStruct = GetDirectoryRecord(binReader)
+
+                    If directoryRecordStruct.fi <> DOT_DIRECTORY Then
+                        'Let's try get the current directory record
+                        _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, currentDirectory)
+
+                    ElseIf directoryRecordStruct.fi = PARENT_DIRECTORY Then
+                        'Let's try get the parent directory record
+                        _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, parentDirectory)
+                    Else
+
+                        If directoryRecordStruct.len_dr <> 0 Then
+                            directoryRecord = New DirectoryRecord(directoryRecordStruct)
+
+                            If directoryRecord.IsDirectory Then
+                                'TODO: Set parent directory
+                            Else
+                                'TODO: Set current directory as parent
+                            End If
+
+                            _directoryRecords(directoryRecord.LBA) = directoryRecord
+                        End If
+
+                    End If
+
+                Loop While directoryRecordStruct.len_dr <> 0
+            End Using
+        End Using
+    End Sub
+
+    Private Sub ParsePathTable(ByVal lba As Integer)
+
+    End Sub
 
 #End Region
 

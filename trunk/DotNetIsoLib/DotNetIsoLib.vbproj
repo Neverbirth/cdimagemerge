@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DirectoryRecord.vb" />
+    <Compile Include="DirectoryRecordReader.vb" />
     <Compile Include="ImageInfo.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
