@@ -11,7 +11,7 @@ Public Class ImageInfo
     Private Const MISSING_DATE As String = "0000000000000000" + ControlChars.NullChar
 
     Private Const DOT_DIRECTORY As String = ControlChars.NullChar
-    Private Const PARENT_DIRECTORY As String = Chr(0)   'I hate to use these VB methods
+    Private Const PARENT_DIRECTORY As String = Chr(1)   'I hate to use these VB methods
 
     Private Const StdVolType As Byte = 1    ' Primary Volume Descriptor type
     Private Const VolEndType As Byte = 255    ' Volume Descriptor Set Terminator type 
@@ -430,7 +430,7 @@ Public Class ImageInfo
                 Do
                     directoryRecordStruct = GetDirectoryRecord(binReader)
 
-                    If directoryRecordStruct.fi <> DOT_DIRECTORY Then
+                    If directoryRecordStruct.fi = DOT_DIRECTORY Then
                         'Let's try get the current directory record
                         _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, currentDirectory)
 
