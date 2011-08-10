@@ -1,4 +1,6 @@
-﻿Public Class ExplorerView
+﻿Imports DotNetIsoLib
+
+Public Class ExplorerView
 
 #Region " Eventos "
 
@@ -9,8 +11,8 @@
 
 #Region " Properties "
 
-    Private _imageInfo As DotNetIsoLib.ImageInfo
-    Public Property ImageInfo() As DotNetIsoLib.ImageInfo
+    Private _imageInfo As ImageInfo
+    Public Property ImageInfo() As ImageInfo
         Get
             Return _imageInfo
         End Get
@@ -20,19 +22,25 @@
                 FileList.Items.Clear()
 
                 _imageInfo = value
+
+                If _imageInfo IsNot Nothing Then
+                    FolderTree.BeginUpdate()
+                    FillFolderTree(_imageInfo.PathTableInfo.RootDirectory, FolderTree.Nodes)
+                    FolderTree.EndUpdate()
+                End If
             End If
         End Set
     End Property
 
-    Private _selectedDirectory As DotNetIsoLib.DirectoryRecordInfo
-    Public ReadOnly Property SelectedDirectory() As DotNetIsoLib.DirectoryRecordInfo
+    Private _selectedDirectory As DirectoryRecordInfo
+    Public ReadOnly Property SelectedDirectory() As DirectoryRecordInfo
         Get
             Return _selectedDirectory
         End Get
     End Property
 
-    Private _selectedFile As DotNetIsoLib.DirectoryRecordInfo
-    Public ReadOnly Property SelectedFile() As DotNetIsoLib.DirectoryRecordInfo
+    Private _selectedFile As DirectoryRecordInfo
+    Public ReadOnly Property SelectedFile() As DirectoryRecordInfo
         Get
             Return _selectedFile
         End Get
@@ -53,6 +61,16 @@
 #End Region
 
 #Region " Methods "
+
+    Private Sub FillFolderTree(ByVal pathEntry As PathTableEntryInfo, ByVal parent As TreeNodeCollection)
+        Dim node As New TreeNode(pathEntry.Name)
+
+        parent.Add(node)
+
+        For Each child In pathEntry.Children
+            FillFolderTree(child, node.Nodes)
+        Next
+    End Sub
 
     Protected Overridable Sub OnSelectedDirectoryChanged(ByVal e As EventArgs)
         RaiseEvent SelectedDirectoryChanged(Me, e)

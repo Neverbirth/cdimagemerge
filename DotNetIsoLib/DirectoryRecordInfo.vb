@@ -13,6 +13,7 @@ Public Class DirectoryRecordInfo
 
 #Region " Fields "
 
+    Private childRecords As New List(Of DirectoryRecordInfo)()
     Private parentLba As Long
 
 #End Region
@@ -90,6 +91,14 @@ Public Class DirectoryRecordInfo
 
 #Region " Methods "
 
+    Friend Sub AddChildRecord(ByVal record As DirectoryRecordInfo)
+        If Not IsDirectory Then
+            Throw New InvalidOperationException("Cannot add child records to a directory record that is a file")
+        End If
+
+        childRecords.Add(record)
+    End Sub
+
     Public Function GetDirectories() As IEnumerable(Of DirectoryRecordInfo)
         If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
@@ -152,12 +161,28 @@ Public Class DirectoryRecordInfo
                                            TimeSpan.FromMinutes(value.gmtOffset * 15))
     End Sub
 
+    Friend Sub RemoveChildRecord(ByVal record As DirectoryRecordInfo)
+        If Not IsDirectory Then
+            Throw New InvalidOperationException("Cannot remove child records from a directory record that is a file")
+        End If
+
+        childRecords.Remove(record)
+    End Sub
+
     Friend Sub SetImageOwner(ByVal image As ImageInfo)
         _imageInfo = image
     End Sub
 
     Friend Sub SetParent(ByVal directoryRecord As DirectoryRecordInfo)
-        _parent = directoryRecord
+        If _parent IsNot directoryRecord Then
+            If _parent IsNot Nothing AndAlso _parent.IsDirectory Then _
+                _parent.RemoveChildRecord(Me)
+
+            _parent = directoryRecord
+
+            If _parent IsNot Nothing AndAlso _parent.IsDirectory Then _
+                _parent.AddChildRecord(Me)
+        End If
     End Sub
 
     Friend Sub SetParentLba(ByVal value As Long)
