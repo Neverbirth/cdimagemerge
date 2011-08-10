@@ -11,6 +11,12 @@ End Enum
 
 Public Class DirectoryRecordInfo
 
+#Region " Fields "
+
+    Private parentLba As Long
+
+#End Region
+
 #Region " Properties "
 
     Private _creationDate As DateTimeOffset
@@ -40,8 +46,8 @@ Public Class DirectoryRecordInfo
         End Get
     End Property
 
-    Private _lba As Integer
-    Public ReadOnly Property LBA() As Integer
+    Private _lba As Long
+    Public ReadOnly Property LBA() As Long
         Get
             Return _lba
         End Get
@@ -64,6 +70,10 @@ Public Class DirectoryRecordInfo
     Private _parent As DirectoryRecordInfo
     Public ReadOnly Property Parent() As DirectoryRecordInfo
         Get
+            If _parent Is Nothing And parentLba > 0 Then
+                _parent = _imageInfo.GetDirectoryRecord(parentLba)
+            End If
+
             Return _parent
         End Get
     End Property
@@ -140,6 +150,18 @@ Public Class DirectoryRecordInfo
         _creationDate = New DateTimeOffset(1900 + value.year, value.month, value.day, _
                                            value.hour, value.minute, value.second, _
                                            TimeSpan.FromMinutes(value.gmtOffset * 15))
+    End Sub
+
+    Friend Sub SetImageOwner(ByVal image As ImageInfo)
+        _imageInfo = image
+    End Sub
+
+    Friend Sub SetParent(ByVal directoryRecord As DirectoryRecordInfo)
+        _parent = directoryRecord
+    End Sub
+
+    Friend Sub SetParentLba(ByVal value As Long)
+        parentLba = value
     End Sub
 
 #End Region
