@@ -48,13 +48,6 @@ Public Class ImageInfo
 #Region " Structures "
 
     '****************************************************************************/
-    '*  Exported Types                                                          */
-    '****************************************************************************/
-
-    'typedef unsigned char byte;
-
-
-    '****************************************************************************/
     '*  ISO 9660 (pANS Z39.86 198x) standard format                             */
     '****************************************************************************/
 
@@ -122,15 +115,12 @@ Public Class ImageInfo
     ' Path Table
     '
 
-    'typedef char  dirIDArray[8];
-
-    Private Structure PathTableRecord
+    Friend Structure PathTableRecord
         Public len_di As Byte   ' length of directory identifier
         Public XARlength As Byte    ' Extended Attribute Record Length
-        Public dirLocation As Long  ' 1st logical block where directory is stored
-        Public parentDN As Short    ' parent directory number
-        '  dirIDArray  dirID;    ' directory identifier: actual length is
-        '  9 - [8+Len_di]; there is an extra blank
+        Public dirLocation As UInteger  ' 1st logical block where directory is stored
+        Public parentDN As UShort    ' parent directory number
+        Public dirID As String    ' directory identifier; there is an extra blank
         '  byte if Len_di is odd.
     End Structure
 
@@ -218,6 +208,13 @@ Public Class ImageInfo
     Public ReadOnly Property Mode() As ImageModes
         Get
             Return _mode
+        End Get
+    End Property
+
+    Private _pathTableInfo As PathTableInfo
+    Public ReadOnly Property PathTableInfo() As PathTableInfo
+        Get
+            Return _pathTableInfo
         End Get
     End Property
 
@@ -474,12 +471,19 @@ Public Class ImageInfo
 
                 imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
 
-                With pathTableStruct
-                    .len_di = binReader.ReadByte()
-                    .XARlength = binReader.ReadByte()
-                    .dirLocation = binReader.ReadInt64()
-                    .parentDN = binReader.ReadInt16()
-                End With
+                Do
+
+                    With pathTableStruct
+                        .len_di = binReader.ReadByte()
+                        .XARlength = binReader.ReadByte()
+                        .dirLocation = binReader.ReadUInt32()
+                        .parentDN = binReader.ReadInt16()
+                        .dirID = Text.Encoding.Default.GetString(binReader.ReadBytes(.len_di))
+
+                        If .len_di Mod 2 <> 0 Then binReader.ReadByte()
+                    End With
+
+                Loop While pathTableStruct.len_di <> 0
             End Using
         End Using
     End Sub
