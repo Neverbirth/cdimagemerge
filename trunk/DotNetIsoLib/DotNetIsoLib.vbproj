@@ -63,7 +63,7 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DirectoryRecord.vb" />
+    <Compile Include="DirectoryRecordInfo.vb" />
     <Compile Include="DirectoryRecordReader.vb" />
     <Compile Include="ImageInfo.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

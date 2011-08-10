@@ -24,15 +24,15 @@
         End Set
     End Property
 
-    Private _selectedDirectory As DotNetIsoLib.DirectoryRecord
-    Public ReadOnly Property SelectedDirectory() As DotNetIsoLib.DirectoryRecord
+    Private _selectedDirectory As DotNetIsoLib.DirectoryRecordInfo
+    Public ReadOnly Property SelectedDirectory() As DotNetIsoLib.DirectoryRecordInfo
         Get
             Return _selectedDirectory
         End Get
     End Property
 
-    Private _selectedFile As DotNetIsoLib.DirectoryRecord
-    Public ReadOnly Property SelectedFile() As DotNetIsoLib.DirectoryRecord
+    Private _selectedFile As DotNetIsoLib.DirectoryRecordInfo
+    Public ReadOnly Property SelectedFile() As DotNetIsoLib.DirectoryRecordInfo
         Get
             Return _selectedFile
         End Get

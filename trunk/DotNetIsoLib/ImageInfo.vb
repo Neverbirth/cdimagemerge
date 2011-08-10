@@ -89,7 +89,7 @@ Public Class ImageInfo
         Public lsbPathTable2 As Integer ' optional occurrence
         Public msbPathTable1 As Integer ' mandatory occurrence
         Public msbPathTable2 As Integer ' optional occurrence
-        Public rootDirectoryRecord As DirectoryRecordStruct
+        Public rootDirectoryRecord As DirectoryRecord
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
         Public volumeSetIdentifier As String
         <MarshalAs(UnmanagedType.ByValTStr, SizeConst:=128)> _
@@ -155,7 +155,7 @@ Public Class ImageInfo
         '        Public finderFlags(2) As Byte
     End Structure
 
-    Friend Structure DirectoryRecordStruct
+    Friend Structure DirectoryRecord
         Public len_dr As Byte       ' directory record length
         Public XARlength As Byte    ' Extended Attribute Record Length
         Public lsbStart As UInteger
@@ -192,7 +192,7 @@ Public Class ImageInfo
 
     Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
     Private _pathTableRecord As PathTableRecord
-    Private _directoryRecords As Dictionary(Of Integer, DirectoryRecord)
+    Private _directoryRecords As Dictionary(Of Integer, DirectoryRecordInfo)
 
 #End Region
 
@@ -227,8 +227,8 @@ Public Class ImageInfo
         End Get
     End Property
 
-    Private _rootDirectory As DirectoryRecord
-    Public ReadOnly Property RootDirectory() As DirectoryRecord
+    Private _rootDirectory As DirectoryRecordInfo
+    Public ReadOnly Property RootDirectory() As DirectoryRecordInfo
         Get
             Return _rootDirectory
         End Get
@@ -260,7 +260,7 @@ Public Class ImageInfo
         _length = fileInfo.Length
         _mode = mode
         _sectorSize = 2352
-        _directoryRecords = New Dictionary(Of Integer, DirectoryRecord)()
+        _directoryRecords = New Dictionary(Of Integer, DirectoryRecordInfo)()
 
         If Not GetPrimaryVolumeDescriptor() Then
 
@@ -271,8 +271,8 @@ Public Class ImageInfo
 
 #Region " Methods "
 
-    Public Function GetDirectoryRecord(ByVal lba As Integer) As DirectoryRecord
-        Dim retVal As DirectoryRecord = Nothing
+    Public Function GetDirectoryRecord(ByVal lba As Integer) As DirectoryRecordInfo
+        Dim retVal As DirectoryRecordInfo = Nothing
 
         If Not _directoryRecords.TryGetValue(lba, retVal) Then
 
@@ -282,13 +282,13 @@ Public Class ImageInfo
     End Function
 
     ' TODO: Allow wildcards inside the filePath
-    Public Function GetDirectoryRecord(ByVal filePath As String) As DirectoryRecord
+    Public Function GetDirectoryRecord(ByVal filePath As String) As DirectoryRecordInfo
         If Not filePath.Contains("/"c) Then
             Throw New ArgumentException("The path provided doesn't have a valid format")
         End If
 
         Dim filePathParts As String() = FileName.Split("/"c)
-        Dim currentRecord As DirectoryRecord = _rootDirectory
+        Dim currentRecord As DirectoryRecordInfo = _rootDirectory
 
         For i As Integer = 0 To filePathParts.Length - 1
             Dim j As Integer = i    ' To suppress warning...
@@ -301,8 +301,8 @@ Public Class ImageInfo
         Return currentRecord
     End Function
 
-    Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecordStruct
-        Dim returnDirectory As New DirectoryRecordStruct()
+    Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecord
+        Dim returnDirectory As New DirectoryRecord()
         Dim restBytes As Short
 
         With returnDirectory
@@ -326,7 +326,7 @@ Public Class ImageInfo
                 .lsbVolSetSeqNum = binReader.ReadInt16()
                 .msbVolSetSeqNum = binReader.ReadInt16()
                 .len_fi = binReader.ReadByte()
-                .fi = System.Text.Encoding.Default.GetString(binReader.ReadBytes(.len_fi))
+                .fi = Text.Encoding.Default.GetString(binReader.ReadBytes(.len_fi))
                 restBytes = .len_dr - 33 - .len_fi
                 If .len_fi Mod 2 = 0 Then
                     binReader.ReadByte()
@@ -343,7 +343,7 @@ Public Class ImageInfo
 
     Private Function GetPrimaryVolumeDescriptor() As Boolean
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
-            Using binReader As BinaryReader = New BinaryReader(imageStream, System.Text.Encoding.Default)
+            Using binReader As BinaryReader = New BinaryReader(imageStream, Text.Encoding.Default)
                 imageStream.Seek(HSVOLSTART * _sectorSize + 24, SeekOrigin.Begin)
                 With _primaryVolumeDescriptor
                     .VDType = binReader.ReadByte()
@@ -352,15 +352,15 @@ Public Class ImageInfo
                         Return False
                     End If
 
-                    .VSStdId = System.Text.Encoding.Default.GetString(binReader.ReadBytes(5))
+                    .VSStdId = Text.Encoding.Default.GetString(binReader.ReadBytes(5))
                     .VSStdVersion = binReader.ReadByte()
                     .Reserved1 = binReader.ReadByte()
-                    .systemIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(32))
-                    .volumeIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(32))
-                    .Reserved2 = System.Text.Encoding.Default.GetString(binReader.ReadBytes(8))
+                    .systemIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(32))
+                    .volumeIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(32))
+                    .Reserved2 = Text.Encoding.Default.GetString(binReader.ReadBytes(8))
                     .lsbVolumeSpaceSize = binReader.ReadInt32()
                     .msbVolumeSpaceSize = binReader.ReadInt32()
-                    .Reserved3 = System.Text.Encoding.Default.GetString(binReader.ReadBytes(32))
+                    .Reserved3 = Text.Encoding.Default.GetString(binReader.ReadBytes(32))
                     .lsbVolumeSetSize = binReader.ReadInt16()
                     .msbVolumeSetSize = binReader.ReadInt16()
                     .lsbVolumeSetSequenceNumber = binReader.ReadInt16()
@@ -374,17 +374,20 @@ Public Class ImageInfo
                     .msbPathTable1 = binReader.ReadInt32()
                     .msbPathTable2 = binReader.ReadInt32()
                     .rootDirectoryRecord = GetDirectoryRecord(binReader)
-                    .volumeSetIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(128))
-                    .publisherIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(128))
-                    .dataPreparerIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(128))
-                    .applicationIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(128))
-                    .copyrightFileIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(37))
-                    .abstractFileIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(37))
-                    .bibliographicFileIdentifier = System.Text.Encoding.Default.GetString(binReader.ReadBytes(37))
-                    .volumeCreation = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
-                    .volumeModification = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
-                    .volumeExpiration = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
-                    .volumeEffective = System.Text.Encoding.Default.GetString(binReader.ReadBytes(17))
+                    .volumeSetIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(128))
+                    .publisherIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(128))
+                    .dataPreparerIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(128))
+                    .applicationIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(128))
+                    .copyrightFileIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(37))
+                    .abstractFileIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(37))
+                    .bibliographicFileIdentifier = Text.Encoding.Default.GetString(binReader.ReadBytes(37))
+                    .volumeCreation = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
+                    .volumeModification = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
+                    .volumeExpiration = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
+                    .volumeEffective = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
+
+                    _rootDirectory = New DirectoryRecordInfo(.rootDirectoryRecord)
+                    _directoryRecords(.rootDirectoryRecord.lsbStart) = _rootDirectory
 
                     ParsePathTable(.lsbPathTable1)
                     ParseDirectoryRecord(.rootDirectoryRecord.lsbStart)
@@ -412,18 +415,18 @@ Public Class ImageInfo
             result = ParseAsciiDateTime(value)
 
             Return True
-        Else
-            Return False
         End If
+
+        Return False
     End Function
 
     Friend Sub ParseDirectoryRecord(ByVal lba As Integer)
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)
-                Dim directoryRecordStruct As DirectoryRecordStruct
-                Dim currentDirectory As DirectoryRecord = Nothing
-                Dim parentDirectory As DirectoryRecord = Nothing
-                Dim directoryRecord As DirectoryRecord
+                Dim directoryRecordStruct As DirectoryRecord
+                Dim currentDirectory As DirectoryRecordInfo = Nothing
+                Dim parentDirectory As DirectoryRecordInfo = Nothing
+                Dim directoryRecord As DirectoryRecordInfo
 
                 imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
 
@@ -440,7 +443,7 @@ Public Class ImageInfo
                     Else
 
                         If directoryRecordStruct.len_dr <> 0 Then
-                            directoryRecord = New DirectoryRecord(directoryRecordStruct)
+                            directoryRecord = New DirectoryRecordInfo(directoryRecordStruct)
 
                             If directoryRecord.IsDirectory Then
                                 'TODO: Set parent directory
@@ -459,7 +462,20 @@ Public Class ImageInfo
     End Sub
 
     Private Sub ParsePathTable(ByVal lba As Integer)
+        Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
+            Using binReader As BinaryReader = New BinaryReader(imageStream)
+                Dim pathTableStruct As PathTableRecord
 
+                imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
+
+                With pathTableStruct
+                    .len_di = binReader.ReadByte()
+                    .XARlength = binReader.ReadByte()
+                    .dirLocation = binReader.ReadInt64()
+                    .parentDN = binReader.ReadInt16()
+                End With
+            End Using
+        End Using
     End Sub
 
 #End Region
