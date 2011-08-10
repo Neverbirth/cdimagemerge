@@ -271,7 +271,7 @@ Public Class ImageInfo
 
 #Region " Methods "
 
-    Public Function GetDirectoryRecord(ByVal lba As Integer) As DirectoryRecordInfo
+    Public Function GetDirectoryRecord(ByVal lba As Long) As DirectoryRecordInfo
         Dim retVal As DirectoryRecordInfo = Nothing
 
         If Not _directoryRecords.TryGetValue(lba, retVal) Then
@@ -390,7 +390,6 @@ Public Class ImageInfo
                     _directoryRecords(.rootDirectoryRecord.lsbStart) = _rootDirectory
 
                     ParsePathTable(.lsbPathTable1)
-                    ParseDirectoryRecord(.rootDirectoryRecord.lsbStart)
                 End With
             End Using
         End Using
@@ -425,7 +424,9 @@ Public Class ImageInfo
             Using binReader As BinaryReader = New BinaryReader(imageStream)
                 Dim directoryRecordStruct As DirectoryRecord
                 Dim currentDirectory As DirectoryRecordInfo = Nothing
+                Dim currentDirectoryLba As Long
                 Dim parentDirectory As DirectoryRecordInfo = Nothing
+                Dim parentDirectoryLba As Long
                 Dim directoryRecord As DirectoryRecordInfo
 
                 imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
@@ -433,22 +434,27 @@ Public Class ImageInfo
                 Do
                     directoryRecordStruct = GetDirectoryRecord(binReader)
 
+                    'TODO: Check if current directory is root
                     If directoryRecordStruct.fi = DOT_DIRECTORY Then
                         'Let's try get the current directory record
                         _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, currentDirectory)
-
+                        currentDirectoryLba = directoryRecordStruct.lsbStart
                     ElseIf directoryRecordStruct.fi = PARENT_DIRECTORY Then
                         'Let's try get the parent directory record
                         _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, parentDirectory)
+                        parentDirectoryLba = directoryRecordStruct.lsbStart
                     Else
 
                         If directoryRecordStruct.len_dr <> 0 Then
                             directoryRecord = New DirectoryRecordInfo(directoryRecordStruct)
+                            directoryRecord.SetImageOwner(Me)
 
                             If directoryRecord.IsDirectory Then
-                                'TODO: Set parent directory
+                                directoryRecord.SetParentLba(parentDirectoryLba)
+                                directoryRecord.SetParent(parentDirectory)
                             Else
-                                'TODO: Set current directory as parent
+                                directoryRecord.SetParentLba(currentDirectoryLba)
+                                directoryRecord.SetParent(currentDirectory)
                             End If
 
                             _directoryRecords(directoryRecord.LBA) = directoryRecord
