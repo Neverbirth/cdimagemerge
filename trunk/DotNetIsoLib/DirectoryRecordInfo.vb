@@ -13,7 +13,7 @@ Public Class DirectoryRecordInfo
 
 #Region " Fields "
 
-    Private childRecords As New List(Of DirectoryRecordInfo)()
+    Private childRecords As List(Of DirectoryRecordInfo)
     Private parentLba As Long
 
 #End Region
@@ -152,7 +152,9 @@ Public Class DirectoryRecordInfo
         _length = value.lsbDataLength
         _name = value.fi
 
-        If Not IsDirectory AndAlso _name.Length > 2 AndAlso _name.Chars(_name.Length - 2) = ";"c Then
+        If IsDirectory Then
+            childRecords = New List(Of DirectoryRecordInfo)()
+        ElseIf _name.Length > 2 AndAlso _name.Chars(_name.Length - 2) = ";"c Then
             _name = _name.Substring(0, _name.Length - 2)
         End If
 
