@@ -9,7 +9,7 @@ Public Enum DirectoryRecordFlags
     NotFinalRecord = 128
 End Enum
 
-Public Class DirectoryRecord
+Public Class DirectoryRecordInfo
 
 #Region " Properties "
 
@@ -61,8 +61,8 @@ Public Class DirectoryRecord
         End Get
     End Property
 
-    Private _parent As DirectoryRecord
-    Public ReadOnly Property Parent() As DirectoryRecord
+    Private _parent As DirectoryRecordInfo
+    Public ReadOnly Property Parent() As DirectoryRecordInfo
         Get
             Return _parent
         End Get
@@ -72,7 +72,7 @@ Public Class DirectoryRecord
 
 #Region " Constructor "
 
-    Friend Sub New(ByVal directoryRecord As ImageInfo.DirectoryRecordStruct)
+    Friend Sub New(ByVal directoryRecord As ImageInfo.DirectoryRecord)
         ParseDirectoryRecordData(directoryRecord)
     End Sub
 
@@ -80,54 +80,54 @@ Public Class DirectoryRecord
 
 #Region " Methods "
 
-    Public Function GetDirectories() As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetDirectories() As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
         'Return _directoryRecords.Values.Where(Function(x) x.IsDirectory)
     End Function
 
-    Public Function GetDirectories(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecord)
+    Public Function GetDirectories(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecordInfo)
         Return GetFiles(searchPattern, False)
     End Function
 
-    Public Function GetDirectories(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetDirectories(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
         'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
     End Function
 
-    Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
     End Function
 
-    Public Function GetDirectoryRecords(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecord)
+    Public Function GetDirectoryRecords(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecordInfo)
         Return GetFiles(searchPattern, False)
     End Function
 
-    Public Function GetDirectoryRecords(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetDirectoryRecords(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
         'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
     End Function
 
-    Public Function GetFiles() As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetFiles() As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
         'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
     End Function
 
-    Public Function GetFiles(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecord)
+    Public Function GetFiles(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecordInfo)
         Return GetFiles(searchPattern, False)
     End Function
 
-    Public Function GetFiles(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecord)
-        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecord)()
+    Public Function GetFiles(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
+        If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
         'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
     End Function
 
-    Private Sub ParseDirectoryRecordData(ByVal value As ImageInfo.DirectoryRecordStruct)
+    Private Sub ParseDirectoryRecordData(ByVal value As ImageInfo.DirectoryRecord)
         _flags = value.fileFlags
         _lba = value.lsbStart
         _length = value.lsbDataLength
