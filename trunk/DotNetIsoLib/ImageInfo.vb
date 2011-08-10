@@ -181,7 +181,6 @@ Public Class ImageInfo
     Private _totalTime As String
 
     Private _primaryVolumeDescriptor As PrimaryVolumeDescriptor
-    Private _pathTableRecord As PathTableRecord
     Private _directoryRecords As Dictionary(Of Integer, DirectoryRecordInfo)
 
 #End Region
@@ -386,7 +385,8 @@ Public Class ImageInfo
                     _rootDirectory = New DirectoryRecordInfo(.rootDirectoryRecord)
                     _directoryRecords(.rootDirectoryRecord.lsbStart) = _rootDirectory
 
-                    ParsePathTable(.lsbPathTable1)
+                    _pathTableInfo = New PathTableInfo()
+                    _pathTableInfo.SetPathTableList(ParsePathTable(.lsbPathTable1))
                 End With
             End Using
         End Using
@@ -464,7 +464,9 @@ Public Class ImageInfo
         End Using
     End Sub
 
-    Private Sub ParsePathTable(ByVal lba As Integer)
+    Private Function ParsePathTable(ByVal lba As Integer) As List(Of PathTableRecord)
+        Dim pathTableList As New List(Of PathTableRecord)()
+
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)
                 Dim pathTableStruct As PathTableRecord
@@ -481,12 +483,16 @@ Public Class ImageInfo
                         .dirID = Text.Encoding.Default.GetString(binReader.ReadBytes(.len_di))
 
                         If .len_di Mod 2 <> 0 Then binReader.ReadByte()
+
+                        If .len_di <> 0 Then pathTableList.Add(pathTableStruct)
                     End With
 
                 Loop While pathTableStruct.len_di <> 0
             End Using
         End Using
-    End Sub
+
+        Return pathtableList
+    End Function
 
 #End Region
 

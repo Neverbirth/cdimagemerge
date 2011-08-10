@@ -1,6 +1,8 @@
 ﻿Public Class PathTableEntryInfo
 
-    Private _children As IEnumerable(Of PathTableEntryInfo)
+#Region " Properties "
+
+    Private _children As New List(Of PathTableEntryInfo)()
     Public ReadOnly Property Children() As IEnumerable(Of PathTableEntryInfo)
         Get
             Return _children
@@ -28,8 +30,39 @@
         End Get
     End Property
 
-    Friend Sub New()
+#End Region
 
+#Region " Constructor "
+
+    Friend Sub New(ByVal pathTableRecord As ImageInfo.PathTableRecord)
+        _lba = pathTableRecord.dirLocation
+        _name = pathTableRecord.dirID
     End Sub
+
+#End Region
+
+#Region " Methods"
+
+    Friend Sub AddChildRecord(ByVal record As PathTableEntryInfo)
+        _children.Add(record)
+    End Sub
+
+    Friend Sub RemoveChildRecord(ByVal record As PathTableEntryInfo)
+        _children.Remove(record)
+    End Sub
+
+    Friend Sub SetParent(ByVal parent As PathTableEntryInfo)
+        If _parent IsNot parent Then
+            If _parent IsNot Nothing Then _
+                _parent.RemoveChildRecord(Me)
+
+            _parent = parent
+
+            If _parent IsNot Nothing Then _
+                _parent.AddChildRecord(Me)
+        End If
+    End Sub
+
+#End Region
 
 End Class
