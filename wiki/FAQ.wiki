@@ -15,7 +15,7 @@
   # [FAQ#Are_multi-session_CDs_supported? Are multi-session CDs supported?]
  * [FAQ#Questions DotNetIsoLib Questions]:
   # [FAQ#What_is_? What is DotNetIsoLib?]
-  # [FAQ#I'm_interested_in_using_DotNetIsoLib,_can_I_use_it_in_my_own_application? I'm interested in using DotNetIsoLib, can I use it in my own application?]
+  # [FAQ#I&#x27;m_interested_in_using_,_can_I_use_it_in_my_own_applicatio I'm interested in using DotNetIsoLib, can I use it in my own application?]
   # [FAQ#Can_I_write_to_an_ISO_file_or_create_a_new_one_with_? Can I write to an ISO file or create a new one with DotNetIsoLib?]
  * [FAQ#Extensibility_Questions Extensibility Questions]:
   # [FAQ#I'd_like_x_feature_added,_is_it_possible? I'd like x feature added, is it possible?]
