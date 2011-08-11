@@ -267,11 +267,11 @@ Public Class ImageInfo
 
 #Region " Methods "
 
-    Public Function GetDirectoryRecord(ByVal lba As Long) As DirectoryRecordInfo
+    Friend Function GetDirectoryRecord(ByVal lba As Long) As DirectoryRecordInfo
         Dim retVal As DirectoryRecordInfo = Nothing
 
         If Not _directoryRecords.TryGetValue(lba, retVal) Then
-
+            ParseDirectoryRecord(lba)
         End If
 
         Return retVal
@@ -283,18 +283,21 @@ Public Class ImageInfo
             Throw New ArgumentException("The path provided doesn't have a valid format")
         End If
 
-        Dim filePathParts As String() = FileName.Split("/"c)
-        Dim currentRecord As DirectoryRecordInfo = _rootDirectory
+        Dim filePathParts As String() = filePath.Split(New Char() {"/"c}, StringSplitOptions.RemoveEmptyEntries)
+        Dim currentRecord As PathTableEntryInfo = _pathTableInfo.RootDirectory
+        Dim i As Integer = 0
 
-        For i As Integer = 0 To filePathParts.Length - 1
+        If filePathParts.Length = 0 Then Return _rootDirectory
+
+        For i = 0 To filePathParts.Length - 2
             Dim j As Integer = i    ' To suppress warning...
 
-            currentRecord = currentRecord.GetFiles().Where(Function(x) x.Name = filePathParts(j)).FirstOrDefault()
+            currentRecord = currentRecord.Children.Where(Function(x) x.Name = filePathParts(j)).FirstOrDefault()
 
             If currentRecord Is Nothing Then Exit For
         Next
 
-        Return currentRecord
+        Return GetDirectoryRecord(currentRecord.LBA).GetDirectoryRecords().FirstOrDefault(Function(x) x.Name = filePathParts(i))
     End Function
 
     Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecord
@@ -382,11 +385,13 @@ Public Class ImageInfo
                     .volumeExpiration = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
                     .volumeEffective = Text.Encoding.Default.GetString(binReader.ReadBytes(17))
 
-                    _rootDirectory = New DirectoryRecordInfo(.rootDirectoryRecord)
-                    _directoryRecords(.rootDirectoryRecord.lsbStart) = _rootDirectory
-
                     _pathTableInfo = New PathTableInfo()
                     _pathTableInfo.SetPathTableList(ParsePathTable(.lsbPathTable1))
+
+                    _rootDirectory = New DirectoryRecordInfo(.rootDirectoryRecord)
+                    _rootDirectory.SetName("/")
+                    _directoryRecords(.rootDirectoryRecord.lsbStart) = _rootDirectory
+                    ParseDirectoryRecord(.rootDirectoryRecord.lsbStart)
                 End With
             End Using
         End Using
@@ -416,7 +421,7 @@ Public Class ImageInfo
         Return False
     End Function
 
-    Friend Sub ParseDirectoryRecord(ByVal lba As Integer)
+    Friend Sub ParseDirectoryRecord(ByVal lba As Long)
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream)
                 Dim directoryRecordStruct As DirectoryRecord
