@@ -57,6 +57,7 @@ Partial Class ExplorerView
         'FolderTree
         '
         Me.FolderTree.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.FolderTree.FullRowSelect = True
         Me.FolderTree.HideSelection = False
         Me.FolderTree.Location = New System.Drawing.Point(0, 0)
         Me.FolderTree.Name = "FolderTree"
@@ -67,6 +68,7 @@ Partial Class ExplorerView
         '
         Me.FileList.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1, Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
         Me.FileList.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.FileList.FullRowSelect = True
         Me.FileList.HideSelection = False
         Me.FileList.Location = New System.Drawing.Point(0, 0)
         Me.FileList.Name = "FileList"

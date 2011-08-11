@@ -19,6 +19,7 @@
 
     Friend Sub SetPathTableList(ByVal pathTableList As IList(Of ImageInfo.PathTableRecord))
         _rootDirectory = New PathTableEntryInfo(pathTableList(0))
+        _rootDirectory.SetName("/")
 
         Dim pathTables As New List(Of PathTableEntryInfo)(pathTableList.Count)
         pathTables.Add(_rootDirectory)

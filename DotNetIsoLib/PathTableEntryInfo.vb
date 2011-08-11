@@ -51,6 +51,10 @@
         _children.Remove(record)
     End Sub
 
+    Friend Sub SetName(ByVal value As String)
+        _name = value
+    End Sub
+
     Friend Sub SetParent(ByVal parent As PathTableEntryInfo)
         If _parent IsNot parent Then
             If _parent IsNot Nothing Then _
