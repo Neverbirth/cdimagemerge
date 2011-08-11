@@ -6,13 +6,19 @@
  * [FAQ#General_Questions General Questions]:
   # [FAQ#Why_making_an_application_like_CDImageMerge? Why making an application like CDImageMerge?]
   # [FAQ#Why_using_VB.NET? Why using VB.NET?]
+  # [FAQ#How_much_time_do_you_spend_on_improving_the_application? How much time do you spend on improving the application?]
  * [FAQ#CDImageMerge_Questions CDImageMerge Questions]:
   # [FAQ#Which_image_formats_does_CDImageMerge_support? Which image formats does CDImageMerge support?]
   # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
   # [FAQ#Does_CDImageMerge_support_DVD_images? Does CDImageMerge support DVD images?]
   # [FAQ#Does_CDImageMerge_support_repairing_damaged_sectors? Does CDImageMerge support repairing damaged sectors?]
   # [FAQ#Are_multi-session_CDs_supported? Are multi-session CDs supported?]
+ * [FAQ#DotNetIsoLib_Questions DotNetIsoLib Questions]:
+  # [FAQ#What_is_DotNetIsoLib? What is DotNetIsoLib?]
+  # [FAQ#I'm_interested_in_using_DotNetIsoLib,_can_I_use_it_in_my_own_application? I'm interested in using DotNetIsoLib, can I use it in my own application?]
+  # [FAQ#Can_I_write_to_an_ISO_file_or_create_a_new_one_with_DotNetIsoLib? Can I write to an ISO file or create a new one with DotNetIsoLib?]
  * [FAQ#Extensibility_Questions Extensibility Questions]:
+  # [FAQ#I'd_like_x_feature_added,_is_it_possible? I'd like x feature added, is it possible?]
   # [FAQ#Can_I_extend_CDImageMerge_functionality? Can I extend CDImageMerge functionality?]
 
 
@@ -23,6 +29,9 @@
 
  * ==Why using VB.NET?==
  This is just a matter of when and why I started the project: the company where I work mainly uses VB for the software it makes, as a result of this, when I start some quick experiment, or personal project I'm not expecting to share, I often use it as well. The project could be easily converted to C# if desired.
+
+ * ==How much time do you spend on improving the application?==
+ I don't have too much spare time, so I only work on CDImageMerge for some minutes when I have a break and feel for it.
 
 
 = CDImageMerge Questions =
@@ -43,7 +52,22 @@
  No, I haven't been able to test any. If I ever have the chance to do so, I'll be willing to add support for them.
 
 
+= DotNetIsoLib Questions =
+
+ * ==What is DotNetIsoLib?==
+ It's the library I made for reading and parsing ISO images.
+
+ * ==I'm interested in using DotNetIsoLib, can I use it in my own application?==
+ If DotNetIsoLib happens to be of use to you, you are free to use it on your own, I'd just like to hear what you are able to make with it.
+
+ * ==Can I write to an ISO file or create a new one with DotNetIsoLib?==
+ No, the library doesn't support writing operations. They could be added tho, while developing the library, possible support for this was taken into account. If you are more interested on this do not hesitate to make a feature request.
+
+
 = Extensibility Questions =
+
+ * ==I'd like _x feature_ added, is it possible?==
+ Just create a feature request or drop me an e-mail and I'll see what can I do.
 
  * ==Can I extend CDImageMerge functionality?==
  CDImageMerge exposes an ICdImageAction interface that can be implemented in your own class library to add your own features to the application. Once developed, just make sure your resulting assembly filename ends with ".CdImageAction.dll", and place it inside the CDImageMerge folder. Furthermore, CDImageMerge is fully open sourced, so if there is something you cannot easily add by using the built-in interface, you can dive into the code and modify whatever you want.
