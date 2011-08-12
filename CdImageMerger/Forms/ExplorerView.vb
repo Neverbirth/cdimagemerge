@@ -53,10 +53,12 @@ Public Class ExplorerView
     Private Sub FolderTree_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles FolderTree.AfterSelect
         Dim directoryRecord = _imageInfo.GetDirectoryRecord(CStr(e.Node.Tag))
 
+        FileList.BeginUpdate()
         FileList.Items.Clear()
         For Each record In directoryRecord.GetDirectoryRecords()
-            FileList.Items.Add(record.Name)
+            FillFileList(record)
         Next
+        FileList.EndUpdate()
 
         OnSelectedDirectoryChanged(EventArgs.Empty)
     End Sub
@@ -69,13 +71,25 @@ Public Class ExplorerView
 
 #Region " Methods "
 
-    Private Sub FillFolderTree(ByVal pathEntry As PathTableEntryInfo, ByVal parent As TreeNode)
+    Private Sub FillFileList(ByVal record As DirectoryRecordInfo)
+        Dim item As New ListViewItem(record.Name)
+
+        item.SubItems.Add(If(record.IsDirectory, String.Empty, record.Length.ToString()))
+        item.SubItems.Add(record.LBA)
+        item.SubItems.Add(String.Empty)
+        item.SubItems.Add(record.CreationDate.ToString())
+        item.SubItems.Add(record.Flags)
+
+        FileList.Items.Add(item)
+    End Sub
+
+    Private Sub FillFolderTree(ByVal pathEntry As PathTableEntryInfo, ByVal parentNode As TreeNode)
         Dim node As New TreeNode(pathEntry.Name)
 
-        If parent IsNot Nothing Then
-            node.Tag = CStr(parent.Tag) + pathEntry.Name + "/"
+        If parentNode IsNot Nothing Then
+            node.Tag = CStr(parentNode.Tag) + pathEntry.Name + "/"
 
-            parent.Nodes.Add(node)
+            parentNode.Nodes.Add(node)
         Else
             node.Tag = pathEntry.Name
 

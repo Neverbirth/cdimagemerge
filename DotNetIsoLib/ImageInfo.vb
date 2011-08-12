@@ -451,13 +451,8 @@ Public Class ImageInfo
                             directoryRecord = New DirectoryRecordInfo(directoryRecordStruct)
                             directoryRecord.SetImageOwner(Me)
 
-                            If directoryRecord.IsDirectory Then
-                                directoryRecord.SetParentLba(parentDirectoryLba)
-                                directoryRecord.SetParent(parentDirectory)
-                            Else
-                                directoryRecord.SetParentLba(currentDirectoryLba)
-                                directoryRecord.SetParent(currentDirectory)
-                            End If
+                            directoryRecord.SetParentLba(currentDirectoryLba)
+                            directoryRecord.SetParent(currentDirectory)
 
                             _directoryRecords(directoryRecord.LBA) = directoryRecord
                         End If

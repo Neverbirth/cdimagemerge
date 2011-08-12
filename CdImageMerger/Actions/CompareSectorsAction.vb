@@ -62,7 +62,7 @@
                         Dim log As New LogForm()
                         log.TextBox1.Text = String.Join(System.Environment.NewLine, differentSectors.ToArray())
                         log.Text += " - " + differentSectors.Count.ToString() + " different sectors"
-                        log.Show(Me)
+                        log.Show()
                     End Using
                 End Using
             End Using

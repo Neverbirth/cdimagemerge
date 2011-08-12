@@ -60,6 +60,7 @@ Public Class MainForm
         Try
             Me.ToolStripStatusLabel1.Text = currentAction.Description
 
+            currentAction.ProgressCallback = AddressOf ActionProgress_Callback
             currentAction.Execute(_origImage, _destImage, origStartPos, destPos, count)
 
             MessageBox.Show("Operation finished succesfully", "Information", MessageBoxButtons.OK, MessageBoxIcon.Information, MessageBoxDefaultButton.Button1)

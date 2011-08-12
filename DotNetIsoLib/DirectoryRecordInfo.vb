@@ -96,6 +96,8 @@ Public Class DirectoryRecordInfo
             Throw New InvalidOperationException("Cannot add child records to a directory record that is a file")
         End If
 
+        If childRecords Is Nothing Then childRecords = New List(Of DirectoryRecordInfo)()
+
         childRecords.Add(record)
     End Sub
 
@@ -128,6 +130,8 @@ Public Class DirectoryRecordInfo
     Private Function GetDirectoryRecords(ByVal predicate As Func(Of DirectoryRecordInfo, Boolean), ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
         If Not IsDirectory Then Return Enumerable.Empty(Of DirectoryRecordInfo)()
 
+        If childRecords Is Nothing Then ImageInfo.ParseDirectoryRecord(LBA)
+
         Dim recordList As IEnumerable(Of DirectoryRecordInfo) = If(recursive, childRecords.SelectMany(Function(x) x.GetDirectoryRecords(predicate, True)), childRecords)
 
         Return If(predicate IsNot Nothing, recordList.Where(predicate), childRecords)
@@ -151,9 +155,7 @@ Public Class DirectoryRecordInfo
         _length = value.lsbDataLength
         _name = value.fi
 
-        If IsDirectory Then
-            childRecords = New List(Of DirectoryRecordInfo)()
-        ElseIf _name.Length > 2 AndAlso _name.Chars(_name.Length - 2) = ";"c Then
+        If Not IsDirectory AndAlso _name.Length > 2 AndAlso _name.Chars(_name.Length - 2) = ";"c Then
             _name = _name.Substring(0, _name.Length - 2)
         End If
 
@@ -166,6 +168,8 @@ Public Class DirectoryRecordInfo
         If Not IsDirectory Then
             Throw New InvalidOperationException("Cannot remove child records from a directory record that is a file")
         End If
+
+        If childRecords Is Nothing Then Return
 
         childRecords.Remove(record)
     End Sub
