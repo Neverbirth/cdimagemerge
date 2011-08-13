@@ -24,10 +24,8 @@
         'Do not modify it using the code editor.
         <System.Diagnostics.DebuggerStepThrough()> _
         Private Sub InitializeComponent()
-            Me.components = New System.ComponentModel.Container
             Me.SplitContainer1 = New System.Windows.Forms.SplitContainer
             Me.FolderTree = New System.Windows.Forms.TreeView
-            Me.SmallImageList = New System.Windows.Forms.ImageList(Me.components)
             Me.FileList = New System.Windows.Forms.ListView
             Me.ColumnHeader1 = New System.Windows.Forms.ColumnHeader
             Me.ColumnHeader2 = New System.Windows.Forms.ColumnHeader
@@ -63,20 +61,11 @@
             Me.FolderTree.Dock = System.Windows.Forms.DockStyle.Fill
             Me.FolderTree.FullRowSelect = True
             Me.FolderTree.HideSelection = False
-            Me.FolderTree.ImageIndex = 0
-            Me.FolderTree.ImageList = Me.SmallImageList
             Me.FolderTree.Location = New System.Drawing.Point(0, 0)
             Me.FolderTree.Name = "FolderTree"
-            Me.FolderTree.SelectedImageIndex = 0
             Me.FolderTree.ShowLines = False
             Me.FolderTree.Size = New System.Drawing.Size(145, 382)
             Me.FolderTree.TabIndex = 16
-            '
-            'SmallImageList
-            '
-            Me.SmallImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-            Me.SmallImageList.ImageSize = New System.Drawing.Size(16, 16)
-            Me.SmallImageList.TransparentColor = System.Drawing.Color.Transparent
             '
             'FileList
             '
@@ -87,7 +76,6 @@
             Me.FileList.Location = New System.Drawing.Point(0, 0)
             Me.FileList.Name = "FileList"
             Me.FileList.Size = New System.Drawing.Size(302, 382)
-            Me.FileList.SmallImageList = Me.SmallImageList
             Me.FileList.TabIndex = 14
             Me.FileList.UseCompatibleStateImageBehavior = False
             Me.FileList.View = System.Windows.Forms.View.Details
@@ -140,7 +128,6 @@
         Friend WithEvents ColumnHeader4 As System.Windows.Forms.ColumnHeader
         Friend WithEvents ColumnHeader5 As System.Windows.Forms.ColumnHeader
         Friend WithEvents ColumnHeader6 As System.Windows.Forms.ColumnHeader
-        Friend WithEvents SmallImageList As System.Windows.Forms.ImageList
 
     End Class
 
