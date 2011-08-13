@@ -27,6 +27,7 @@
             Me.components = New System.ComponentModel.Container
             Me.SplitContainer1 = New System.Windows.Forms.SplitContainer
             Me.FolderTree = New System.Windows.Forms.TreeView
+            Me.SmallImageList = New System.Windows.Forms.ImageList(Me.components)
             Me.FileList = New System.Windows.Forms.ListView
             Me.ColumnHeader1 = New System.Windows.Forms.ColumnHeader
             Me.ColumnHeader2 = New System.Windows.Forms.ColumnHeader
@@ -34,7 +35,6 @@
             Me.ColumnHeader4 = New System.Windows.Forms.ColumnHeader
             Me.ColumnHeader5 = New System.Windows.Forms.ColumnHeader
             Me.ColumnHeader6 = New System.Windows.Forms.ColumnHeader
-            Me.SmallImageList = New System.Windows.Forms.ImageList(Me.components)
             Me.SplitContainer1.Panel1.SuspendLayout()
             Me.SplitContainer1.Panel2.SuspendLayout()
             Me.SplitContainer1.SuspendLayout()
@@ -72,6 +72,12 @@
             Me.FolderTree.Size = New System.Drawing.Size(145, 382)
             Me.FolderTree.TabIndex = 16
             '
+            'SmallImageList
+            '
+            Me.SmallImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+            Me.SmallImageList.ImageSize = New System.Drawing.Size(16, 16)
+            Me.SmallImageList.TransparentColor = System.Drawing.Color.Transparent
+            '
             'FileList
             '
             Me.FileList.Columns.AddRange(New System.Windows.Forms.ColumnHeader() {Me.ColumnHeader1, Me.ColumnHeader2, Me.ColumnHeader3, Me.ColumnHeader4, Me.ColumnHeader5, Me.ColumnHeader6})
@@ -93,10 +99,12 @@
             'ColumnHeader2
             '
             Me.ColumnHeader2.Text = "Size"
+            Me.ColumnHeader2.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
             '
             'ColumnHeader3
             '
             Me.ColumnHeader3.Text = "LBA"
+            Me.ColumnHeader3.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
             '
             'ColumnHeader4
             '
@@ -109,12 +117,6 @@
             'ColumnHeader6
             '
             Me.ColumnHeader6.Text = "Flags"
-            '
-            'SmallImageList
-            '
-            Me.SmallImageList.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
-            Me.SmallImageList.ImageSize = New System.Drawing.Size(16, 16)
-            Me.SmallImageList.TransparentColor = System.Drawing.Color.Transparent
             '
             'ExplorerView
             '
