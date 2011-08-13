@@ -285,7 +285,7 @@ Public Class ImageInfo
 
         Dim filePathParts As String() = filePath.Split(New Char() {"/"c}, StringSplitOptions.RemoveEmptyEntries)
         Dim currentRecord As PathTableEntryInfo = _pathTableInfo.RootDirectory
-        Dim i As Integer = 0
+        Dim i As Integer
 
         If filePathParts.Length = 0 Then Return _rootDirectory
 
@@ -427,8 +427,6 @@ Public Class ImageInfo
                 Dim directoryRecordStruct As DirectoryRecord
                 Dim currentDirectory As DirectoryRecordInfo = Nothing
                 Dim currentDirectoryLba As Long
-                Dim parentDirectory As DirectoryRecordInfo = Nothing
-                Dim parentDirectoryLba As Long
                 Dim directoryRecord As DirectoryRecordInfo
 
                 imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
@@ -436,27 +434,20 @@ Public Class ImageInfo
                 Do
                     directoryRecordStruct = GetDirectoryRecord(binReader)
 
-                    'TODO: Check if current directory is root
                     If directoryRecordStruct.fi = DOT_DIRECTORY Then
                         'Let's try get the current directory record
                         _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, currentDirectory)
                         currentDirectoryLba = directoryRecordStruct.lsbStart
-                    ElseIf directoryRecordStruct.fi = PARENT_DIRECTORY Then
-                        'Let's try get the parent directory record
-                        _directoryRecords.TryGetValue(directoryRecordStruct.lsbStart, parentDirectory)
-                        parentDirectoryLba = directoryRecordStruct.lsbStart
-                    Else
+                    ElseIf directoryRecordStruct.fi <> PARENT_DIRECTORY _
+                        AndAlso directoryRecordStruct.len_dr <> 0 Then
 
-                        If directoryRecordStruct.len_dr <> 0 Then
-                            directoryRecord = New DirectoryRecordInfo(directoryRecordStruct)
-                            directoryRecord.SetImageOwner(Me)
+                        directoryRecord = New DirectoryRecordInfo(directoryRecordStruct)
+                        directoryRecord.SetImageOwner(Me)
 
-                            directoryRecord.SetParentLba(currentDirectoryLba)
-                            directoryRecord.SetParent(currentDirectory)
+                        directoryRecord.SetParentLba(currentDirectoryLba)
+                        directoryRecord.SetParent(currentDirectory)
 
-                            _directoryRecords(directoryRecord.LBA) = directoryRecord
-                        End If
-
+                        _directoryRecords(directoryRecord.LBA) = directoryRecord
                     End If
 
                 Loop While directoryRecordStruct.len_dr <> 0
