@@ -21,7 +21,8 @@ Namespace Forms
 
 #Region " Fields "
 
-        Private ReadOnly fileInfoCache As New Dictionary(Of String, NativeMethods.SHFILEINFO)()
+        Private Shared ReadOnly fileInfoCache As New Dictionary(Of String, NativeMethods.SHFILEINFO)()
+        Private Shared ReadOnly fileInfoImageList As New ImageList()
 
 #End Region
 
@@ -66,12 +67,18 @@ Namespace Forms
 
 #Region " Constructors "
 
+        Shared Sub New()
+            fileInfoImageList.ColorDepth = ColorDepth.Depth32Bit
+            GetFileInfo(FOLDER_KEY)
+        End Sub
+
         Public Sub New()
             ' This call is required by the Windows Form Designer.
             InitializeComponent()
 
             ' Add any initialization after the InitializeComponent() call.
-            GetFileInfo(FOLDER_KEY)
+            FileList.SmallImageList = fileInfoImageList
+            FolderTree.ImageList = fileInfoImageList
         End Sub
 
 #End Region
@@ -153,7 +160,7 @@ Namespace Forms
             Next
         End Sub
 
-        Private Function GetFileInfo(ByVal key As String) As NativeMethods.SHFILEINFO
+        Private Shared Function GetFileInfo(ByVal key As String) As NativeMethods.SHFILEINFO
             Dim info As NativeMethods.SHFILEINFO = Nothing
 
             If Not fileInfoCache.TryGetValue(key, info) Then
@@ -165,7 +172,7 @@ Namespace Forms
 
                 NativeMethods.SHGetFileInfo(key, attrs, info, Marshal.SizeOf(info), NativeMethods.SHGFI_TYPENAME Or NativeMethods.SHGFI_USEFILEATTRIBUTES Or NativeMethods.SHGFI_ICON Or NativeMethods.SHGFI_SMALLICON)
 
-                SmallImageList.Images.Add(key, Icon.FromHandle(info.hIcon))
+                fileInfoImageList.Images.Add(key, Icon.FromHandle(info.hIcon))
 
                 fileInfoCache(key) = info
             End If
