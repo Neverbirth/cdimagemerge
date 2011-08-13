@@ -106,11 +106,11 @@ Public Class DirectoryRecordInfo
     End Function
 
     Public Function GetDirectories(ByVal searchPattern As String) As IEnumerable(Of DirectoryRecordInfo)
-        Return GetFiles(searchPattern, False)
+        Return GetDirectories(searchPattern, False)
     End Function
 
     Public Function GetDirectories(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
-        'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+        Return GetDirectoryRecords(Function(x) x.IsDirectory AndAlso ConversionUtils.GetRegExFromPattern(searchPattern).IsMatch(x.Name), recursive)
     End Function
 
     Public Function GetDirectoryRecords() As IEnumerable(Of DirectoryRecordInfo)
@@ -124,7 +124,7 @@ Public Class DirectoryRecordInfo
     End Function
 
     Public Function GetDirectoryRecords(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
-        'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+        Return GetDirectoryRecords(Function(x) ConversionUtils.GetRegExFromPattern(searchPattern).IsMatch(x.Name), recursive)
     End Function
 
     Private Function GetDirectoryRecords(ByVal predicate As Func(Of DirectoryRecordInfo, Boolean), ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
@@ -146,7 +146,7 @@ Public Class DirectoryRecordInfo
     End Function
 
     Public Function GetFiles(ByVal searchPattern As String, ByVal recursive As Boolean) As IEnumerable(Of DirectoryRecordInfo)
-        'Return _directoryRecords.Values.Where(Function(x) Not x.IsDirectory)
+        Return GetDirectoryRecords(Function(x) Not x.IsDirectory AndAlso ConversionUtils.GetRegExFromPattern(searchPattern).IsMatch(x.Name), recursive)
     End Function
 
     Private Sub ParseDirectoryRecordData(ByVal value As ImageInfo.DirectoryRecord)

@@ -297,7 +297,7 @@ Public Class ImageInfo
             If currentRecord Is Nothing Then Exit For
         Next
 
-        Return GetDirectoryRecord(currentRecord.LBA).GetDirectoryRecords().FirstOrDefault(Function(x) x.Name = filePathParts(i))
+        Return GetDirectoryRecord(currentRecord.LBA).GetDirectoryRecords().FirstOrDefault(Function(x) ConversionUtils.GetRegExFromPattern(filePathParts(i)).IsMatch(x.Name))
     End Function
 
     Private Function GetDirectoryRecord(ByVal binReader As BinaryReader) As DirectoryRecord
