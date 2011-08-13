@@ -3,12 +3,25 @@ Imports System.Runtime.InteropServices
 
 Namespace Forms
 
+    'TODO: Add column sorting
     Public Class ExplorerView
+
+#Region " Constants "
+
+        Private Const FOLDER_KEY As String = "folder"
+
+#End Region
 
 #Region " Eventos "
 
         Public Event SelectedDirectoryChanged As EventHandler
         Public Event SelectedFileChanged As EventHandler
+
+#End Region
+
+#Region " Fields "
+
+        Private ReadOnly fileInfoCache As New Dictionary(Of String, NativeMethods.SHFILEINFO)()
 
 #End Region
 
@@ -51,6 +64,18 @@ Namespace Forms
 
 #End Region
 
+#Region " Constructors "
+
+        Public Sub New()
+            ' This call is required by the Windows Form Designer.
+            InitializeComponent()
+
+            ' Add any initialization after the InitializeComponent() call.
+            GetFileInfo(FOLDER_KEY)
+        End Sub
+
+#End Region
+
 #Region " Event Handlers "
 
         Private Sub FolderTree_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles FolderTree.AfterSelect
@@ -84,18 +109,22 @@ Namespace Forms
 
         Private Sub FillFileList(ByVal record As DirectoryRecordInfo)
             Dim item As New ListViewItem(record.Name)
+            Dim key As String
 
-            Dim info = New NativeMethods.SHFILEINFO()
-            Dim attrs As UInteger = If(record.IsDirectory, NativeMethods.FILE_ATTRIBUTE_DIRECTORY, NativeMethods.FILE_ATTRIBUTE_NORMAL)
+            If record.IsDirectory Then
+                key = FOLDER_KEY
+            Else
+                Dim ex As String = IO.Path.GetExtension(record.Name)
 
-            If record.Flags And DirectoryRecordFlags.Hidden Then attrs = attrs Or NativeMethods.FILE_ATTRIBUTE_HIDDEN
+                key = If(String.IsNullOrEmpty(ex), "dummy", ex)
 
-            NativeMethods.SHGetFileInfo(record.Name, attrs, info, Marshal.SizeOf(info), NativeMethods.SHGFI_TYPENAME Or NativeMethods.SHGFI_USEFILEATTRIBUTES Or NativeMethods.SHGFI_ICON Or NativeMethods.SHGFI_SMALLICON)
+                If record.Flags And DirectoryRecordFlags.Hidden Then key += ".hidden"
+            End If
 
-            SmallImageList.Images.Add(record.Name, Icon.FromHandle(info.hIcon))
+            Dim info As NativeMethods.SHFILEINFO = GetFileInfo(key)
 
-            item.ImageKey = record.Name
-            item.SubItems.Add(If(record.IsDirectory, String.Empty, record.Length.ToString()))
+            item.ImageKey = key
+            item.SubItems.Add(If(record.IsDirectory, String.Empty, Utils.ConversionUtils.ConvertFromBytes(record.Length)))
             item.SubItems.Add(record.LBA)
             item.SubItems.Add(info.szTypeName)
             item.SubItems.Add(record.CreationDate.ToString())
@@ -106,6 +135,8 @@ Namespace Forms
 
         Private Sub FillFolderTree(ByVal pathEntry As PathTableEntryInfo, ByVal parentNode As TreeNode)
             Dim node As New TreeNode(pathEntry.Name)
+
+            node.ImageKey = FOLDER_KEY
 
             If parentNode IsNot Nothing Then
                 node.Tag = CStr(parentNode.Tag) + pathEntry.Name + "/"
@@ -121,6 +152,26 @@ Namespace Forms
                 FillFolderTree(child, node)
             Next
         End Sub
+
+        Private Function GetFileInfo(ByVal key As String) As NativeMethods.SHFILEINFO
+            Dim info As NativeMethods.SHFILEINFO = Nothing
+
+            If Not fileInfoCache.TryGetValue(key, info) Then
+                info = New NativeMethods.SHFILEINFO()
+
+                Dim attrs As UInteger = If(key = FOLDER_KEY, NativeMethods.FILE_ATTRIBUTE_DIRECTORY, NativeMethods.FILE_ATTRIBUTE_NORMAL)
+
+                If key.EndsWith(".hidden") Then attrs = attrs Or NativeMethods.FILE_ATTRIBUTE_HIDDEN
+
+                NativeMethods.SHGetFileInfo(key, attrs, info, Marshal.SizeOf(info), NativeMethods.SHGFI_TYPENAME Or NativeMethods.SHGFI_USEFILEATTRIBUTES Or NativeMethods.SHGFI_ICON Or NativeMethods.SHGFI_SMALLICON)
+
+                SmallImageList.Images.Add(key, Icon.FromHandle(info.hIcon))
+
+                fileInfoCache(key) = info
+            End If
+
+            Return info
+        End Function
 
         Protected Overridable Sub OnSelectedDirectoryChanged(ByVal e As EventArgs)
             RaiseEvent SelectedDirectoryChanged(Me, e)
