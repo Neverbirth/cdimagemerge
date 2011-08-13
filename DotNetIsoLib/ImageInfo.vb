@@ -8,6 +8,8 @@ Public Class ImageInfo
     Private Const HSVOLSTART As Integer = 16    ' where we expect a Primary Volume Descriptor */
     Private Const HSTERMSTART As Integer = 17    ' where we expect the Volume Descriptor Terminator */
 
+    Private Const FRAME_SIZE As Integer = 24
+
     Private Const MISSING_DATE As String = "0000000000000000" + ControlChars.NullChar
 
     Private Const DOT_DIRECTORY As String = ControlChars.NullChar
@@ -17,16 +19,6 @@ Public Class ImageInfo
     Private Const VolEndType As Byte = 255    ' Volume Descriptor Set Terminator type 
 
     Private Shared ReadOnly imageModesSectorSize As Dictionary(Of ImageModes, Integer)
-
-    '
-    ' File Flags for Directory Records
-    '
-    Private Const existenceBit As Integer = &H1
-    Private Const directoryBit As Integer = &H2
-    Private Const associatedBit As Integer = &H4
-    Private Const recordBit As Integer = &H8
-    Private Const protectionBit As Integer = &H10
-    Private Const multiextentBit As Integer = &H80
 
 #End Region
 
@@ -343,7 +335,7 @@ Public Class ImageInfo
     Private Function GetPrimaryVolumeDescriptor() As Boolean
         Using imageStream As FileStream = New FileStream(_fileName, FileMode.Open, FileAccess.Read, FileShare.Read, _sectorSize)
             Using binReader As BinaryReader = New BinaryReader(imageStream, Text.Encoding.Default)
-                imageStream.Seek(HSVOLSTART * _sectorSize + 24, SeekOrigin.Begin)
+                imageStream.Seek(HSVOLSTART * _sectorSize + FRAME_SIZE, SeekOrigin.Begin)
                 With _primaryVolumeDescriptor
                     .VDType = binReader.ReadByte()
 
@@ -429,7 +421,7 @@ Public Class ImageInfo
                 Dim currentDirectoryLba As Long
                 Dim directoryRecord As DirectoryRecordInfo
 
-                imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
+                imageStream.Seek(lba * _sectorSize + FRAME_SIZE, SeekOrigin.Begin)
 
                 Do
                     directoryRecordStruct = GetDirectoryRecord(binReader)
@@ -462,7 +454,7 @@ Public Class ImageInfo
             Using binReader As BinaryReader = New BinaryReader(imageStream)
                 Dim pathTableStruct As PathTableRecord
 
-                imageStream.Seek(lba * _sectorSize + 24, SeekOrigin.Begin)
+                imageStream.Seek(lba * _sectorSize + FRAME_SIZE, SeekOrigin.Begin)
 
                 Do
 
