@@ -7,12 +7,14 @@
   # [FAQ#Why_making_an_application_like_CDImageMerge? Why making an application like CDImageMerge?]
   # [FAQ#Why_using_VB.NET? Why using VB.NET?]
   # [FAQ#How_much_time_do_you_spend_on_improving_the_application? How much time do you spend on improving the application?]
+  # [FAQ#I'd_like_to_collaborate_with_the_project,_what_can_I_do? I'd like to collaborate with the project, what can I do?]
  * [FAQ#CDImageMerge_Questions CDImageMerge Questions]:
   # [FAQ#Which_image_formats_does_CDImageMerge_support? Which image formats does CDImageMerge support?]
   # [FAQ#Which_CD-ROM_formats_does_CDImageMerge_support? Which CD-ROM formats does CDImageMerge support?]
   # [FAQ#Does_CDImageMerge_support_DVD_images? Does CDImageMerge support DVD images?]
   # [FAQ#Does_CDImageMerge_support_repairing_damaged_sectors? Does CDImageMerge support repairing damaged sectors?]
   # [FAQ#Are_multi-session_CDs_supported? Are multi-session CDs supported?]
+  # [FAQ#Which_are_your_plans_to_improve_CDImageMerge? Which are your plans to improve CDImageMerge?]
  * [FAQ#Questions DotNetIsoLib Questions]:
   # [FAQ#What_is_? What is DotNetIsoLib?]
   # [FAQ#I'm_interested_in_using_,_can_I_use_it_in_my_own_applicatio I'm interested in using DotNetIsoLib, can I use it in my own application?]
@@ -33,6 +35,9 @@
  * ==How much time do you spend on improving the application?==
  I don't have too much spare time, so I only work on CDImageMerge for some minutes when I have a break and feel for it.
 
+ * ==I'd like to collaborate with the project, what can I do?==
+ Get in contact with me, you can help with whatever is going to improve the project, be it new features, improve old ones, or add unit tests.
+
 
 = CDImageMerge Questions =
 
@@ -50,6 +55,9 @@
 
  * ==Are multi-session CDs supported?==
  No, I haven't been able to test any. If I ever have the chance to do so, I'll be willing to add support for them.
+
+ * ==Which are your plans to improve CDImageMerge?==
+ You can find some of the things I'm going to work on in this [https://www.pivotaltracker.com/projects/344619 PivotalTracker project page].
 
 
 = DotNetIsoLib Questions =
