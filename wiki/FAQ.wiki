@@ -43,7 +43,7 @@
  The application reads all images as Mode 2/2352. However, adding support for other formats is trivial and planned.
 
  * ==Does CDImageMerge support DVD images?==
- DVD images are not tested, and therefore not officially supported. However, when the different CD-ROM formats are added they should work as well. This will be eventually looked into, and officially supported.
+ DVD images normally use a completely different file system than the one supported. This may be looked and added in the future.
 
  * ==Does CDImageMerge support repairing damaged sectors?==
  No, although it would a nice exercise to learn more, I think there are (there is?) already some good applications for this.
