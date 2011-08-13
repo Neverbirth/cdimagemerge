@@ -85,8 +85,30 @@ Namespace Forms
 
 #Region " Event Handlers "
 
+        Private Sub FileList_DoubleClick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileList.DoubleClick
+            If _selectedFile IsNot Nothing AndAlso _selectedFile.IsDirectory Then
+                FolderTree.SelectedNode = FolderTree.SelectedNode.Nodes.Find(CStr(FolderTree.SelectedNode.Tag) + _selectedFile.Name + "/", False).FirstOrDefault()
+            End If
+        End Sub
+
+        Private Sub FileList_HandleCreated(ByVal sender As Object, ByVal e As System.EventArgs) Handles FileList.HandleCreated
+            FileList.SetShellTheme()
+        End Sub
+
+        Private Sub FileList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileList.SelectedIndexChanged
+            If FileList.SelectedItems.Count > 0 Then
+                _selectedFile = DirectCast(FileList.SelectedItems(0).Tag, DirectoryRecordInfo)
+            Else
+                _selectedFile = Nothing
+            End If
+
+            OnSelectedFileChanged(EventArgs.Empty)
+        End Sub
+
         Private Sub FolderTree_AfterSelect(ByVal sender As System.Object, ByVal e As System.Windows.Forms.TreeViewEventArgs) Handles FolderTree.AfterSelect
             Dim directoryRecord = _imageInfo.GetDirectoryRecord(CStr(e.Node.Tag))
+
+            _selectedDirectory = directoryRecord
 
             FileList.BeginUpdate()
             FileList.Items.Clear()
@@ -100,14 +122,6 @@ Namespace Forms
 
         Private Sub FolderTree_HandleCreated(ByVal sender As Object, ByVal e As System.EventArgs) Handles FolderTree.HandleCreated
             FolderTree.SetShellTheme()
-        End Sub
-
-        Private Sub FileList_HandleCreated(ByVal sender As Object, ByVal e As System.EventArgs) Handles FileList.HandleCreated
-            FileList.SetShellTheme()
-        End Sub
-
-        Private Sub FileList_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles FileList.SelectedIndexChanged
-            OnSelectedFileChanged(EventArgs.Empty)
         End Sub
 
 #End Region
@@ -136,6 +150,7 @@ Namespace Forms
             item.SubItems.Add(info.szTypeName)
             item.SubItems.Add(record.CreationDate.ToString())
             item.SubItems.Add(record.Flags)
+            item.Tag = record
 
             FileList.Items.Add(item)
         End Sub
@@ -154,6 +169,8 @@ Namespace Forms
 
                 FolderTree.Nodes.Add(node)
             End If
+
+            node.Name = CStr(node.Tag)
 
             For Each child In pathEntry.Children
                 FillFolderTree(child, node)
